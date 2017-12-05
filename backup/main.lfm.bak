@@ -6,6 +6,8 @@ object frmMain: TfrmMain
   Caption = 'MVCTranscoder'
   ClientHeight = 632
   ClientWidth = 577
+  OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   LCLVersion = '1.6.4.0'
   object tabTitles: TTabControl

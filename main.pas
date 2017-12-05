@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, ExtCtrls, Process;
+  ComCtrls, ExtCtrls, Process, LCLType;
 
 type
   TTranscode = record
@@ -33,6 +33,8 @@ type
     tabTitles: TTabControl;
     tmrUpdate: TTimer;
     procedure btnProcessFileClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure tabTitlesChange(Sender: TObject);
     procedure tabTitlesChanging(Sender: TObject; var AllowChange: Boolean);
@@ -97,20 +99,12 @@ const
   BUF_SIZE = 2048; // Buffer size for reading the output in chunks
 var
   BytesRead: longint;
-  Buffer       : array[1..BUF_SIZE] of byte;
+  Buffer : array[1..BUF_SIZE] of byte;
   OutputString: String;
 begin
   if Transcodes[Id].Running then
   begin
-     Transcodes[Id].Running := Transcodes[Id].AProcess.Running;
-
-    if btnProcessFile.Tag = 2 then
-    begin
-      Transcodes[Id].AProcess.Terminate(1);
-      OutputString := 'Processing ABORTED!';
-      mmEncode.Lines.Add(OutputString);
-      Transcodes[Id].StdOutput.Add(OutputString);
-    end;
+    Transcodes[Id].Running := Transcodes[Id].AProcess.Running;
 
     // Create a stream object to store the generated output in. This could
     // also be a file stream to directly save the output to disk.
@@ -174,6 +168,43 @@ begin
   else btnProcessFile.Tag := 2;
 end;
 
+procedure TfrmMain.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+var
+  t: integer;
+begin
+  { Terminate all running processes. }
+  for t := 0 to High(Transcodes) do
+  begin
+    if Transcodes[t].Running then
+        Transcodes[t].AProcess.Terminate(1);
+  end;
+end;
+
+procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: boolean);
+var
+  Running, t, Reply: integer;
+begin
+  Running := 0;
+
+  for t := 0 to High(Transcodes) do
+  begin
+    if Transcodes[t].Running then
+      Running := Running + 1;
+  end;
+
+  if (Running > 0) then
+  begin
+    if (Running > 1) then
+      Reply := Application.MessageBox(PChar('There are ' + IntToStr(Running) + ' trasncodes active.'
+        + LineEnding + 'Close Transcoder?'), 'Abort Transcodes?', MB_ICONQUESTION + MB_YESNO)
+    else
+      Reply := Application.MessageBox(PChar('There is 1 trasncode active.'
+        + LineEnding + 'Close Transcoder?'), 'Abort Transcodes?', MB_ICONQUESTION + MB_YESNO);
+
+    CanClose := (Reply = IDYES);
+  end;
+end;
+
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
   SetLength(Transcodes, 0);
@@ -212,32 +243,48 @@ end;
 procedure TfrmMain.tmrUpdateTimer(Sender: TObject);
 var
   t: integer;
+  OutputString: string;
 begin
-  t := tabTitles.TabIndex;
-
-  if (t >= 0) then
+  for t := 0 to High(Transcodes) do
   begin
-    if Transcodes[t].Running then
+    UpdateProgress(t);
+
+    if t = tabTitles.TabIndex then
     begin
-      UpdateProgress(t);
+      if btnProcessFile.Tag = 2 then
+      begin
+        Transcodes[t].AProcess.Terminate(1);
+        OutputString := 'Processing ABORTED!';
+        mmEncode.Lines.Add(OutputString);
+        Transcodes[t].StdOutput.Add(OutputString);
+      end;
+
+      if Transcodes[t].Running then
+      begin
+        if (btnProcessFile.Tag <> 1) then
+        begin
+          btnProcessFile.Caption := 'Abort Processing';
+          btnProcessFile.Tag := 1;
+          pbarEncoding.Visible := True;
+        end;
+      end
+      else
+      begin
+        if (btnProcessFile.Tag <> 0) then
+        begin
+          pbarEncoding.Visible := False;
+          btnProcessFile.Tag := 0;
+          btnProcessFile.Caption := 'Process File';
+        end;
+      end;
+
       stxtFrames.Caption := IntToStr(Transcodes[t].Frames);
-      if (btnProcessFile.Tag <> 1) then
-      begin
-        btnProcessFile.Caption := 'Abort Processing';
-        btnProcessFile.Tag := 1;
-        pbarEncoding.Visible := True;
-      end;
-    end
-    else
-    begin
-      if (btnProcessFile.Tag <> 0) then
-      begin
-        stxtFrames.Caption := IntToStr(Transcodes[t].Frames);
-        pbarEncoding.Visible := False;
-        btnProcessFile.Tag := 0;
-        btnProcessFile.Caption := 'Process File';
-      end;
     end;
+
+    if Transcodes[t].Running then
+       TabTitles.Tabs[t] := IntToStr(t+1) + ' ' + IntToStr(Transcodes[t].Frames)
+    else
+        TabTitles.Tabs[t] := IntToStr(t+1);
   end;
 end;
 
