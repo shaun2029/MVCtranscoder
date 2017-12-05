@@ -13,6 +13,8 @@ object frmMain: TfrmMain
     Height = 616
     Top = 8
     Width = 563
+    OnChange = tabTitlesChange
+    OnChanging = tabTitlesChanging
     TabOrder = 0
     object GroupBox1: TGroupBox
       Left = 8

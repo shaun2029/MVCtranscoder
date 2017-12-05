@@ -15,6 +15,7 @@ type
     StdErr: TStringList;
     Frames : longint;
     SrcFile, DstFile: String;
+    MemoText: string;
     Running: boolean;
   end;
 
@@ -33,6 +34,8 @@ type
     tmrUpdate: TTimer;
     procedure btnProcessFileClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure tabTitlesChange(Sender: TObject);
+    procedure tabTitlesChanging(Sender: TObject; var AllowChange: Boolean);
     procedure tmrUpdateTimer(Sender: TObject);
   private
     Transcodes: array of TTranscode;
@@ -157,7 +160,7 @@ begin
   begin
     if dlgOpen.Execute and dlgSave.Execute then
     begin
-      t := High(Transcodes);
+      t := tabTitles.TabIndex;
       Transcodes[t].SrcFile := dlgOpen.FileName;
       Transcodes[t].DstFile := dlgSave.FileName;
 
@@ -166,11 +169,6 @@ begin
       pbarEncoding.Visible := True;
       stxtFrames.Caption := '';
       EncodeFile(t);
-{
-      pbarEncoding.Visible := False;
-      btnProcessFile.Tag := 0;
-      btnProcessFile.Caption := 'Process File';
-}
     end;
   end
   else btnProcessFile.Tag := 2;
@@ -180,6 +178,35 @@ procedure TfrmMain.FormCreate(Sender: TObject);
 begin
   SetLength(Transcodes, 0);
   AddTranscode();
+  AddTranscode();
+  AddTranscode();
+  AddTranscode();
+end;
+
+procedure TfrmMain.tabTitlesChange(Sender: TObject);
+var
+  t: integer;
+begin
+  t := tabTitles.TabIndex;
+
+  if (mmEncode.Tag >= 0) then
+  begin
+    mmEncode.Text := Transcodes[t].MemoText;
+  end;
+
+  Updateprogress(t);
+end;
+
+procedure TfrmMain.tabTitlesChanging(Sender: TObject; var AllowChange: Boolean);
+var
+  t: integer;
+begin
+  t := tabTitles.TabIndex;
+
+  if (t >= 0) then
+  begin
+    Transcodes[t].MemoText := mmEncode.Text;
+  end;
 end;
 
 procedure TfrmMain.tmrUpdateTimer(Sender: TObject);
@@ -190,8 +217,27 @@ begin
 
   if (t >= 0) then
   begin
-    UpdateProgress(t);
-    stxtFrames.Caption := IntToStr(Transcodes[t].Frames);
+    if Transcodes[t].Running then
+    begin
+      UpdateProgress(t);
+      stxtFrames.Caption := IntToStr(Transcodes[t].Frames);
+      if (btnProcessFile.Tag <> 1) then
+      begin
+        btnProcessFile.Caption := 'Abort Processing';
+        btnProcessFile.Tag := 1;
+        pbarEncoding.Visible := True;
+      end;
+    end
+    else
+    begin
+      if (btnProcessFile.Tag <> 0) then
+      begin
+        stxtFrames.Caption := IntToStr(Transcodes[t].Frames);
+        pbarEncoding.Visible := False;
+        btnProcessFile.Tag := 0;
+        btnProcessFile.Caption := 'Process File';
+      end;
+    end;
   end;
 end;
 
