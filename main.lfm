@@ -1,0 +1,88 @@
+object frmMain: TfrmMain
+  Left = 304
+  Height = 632
+  Top = 100
+  Width = 577
+  Caption = 'MVCTranscoder'
+  ClientHeight = 632
+  ClientWidth = 577
+  OnCreate = FormCreate
+  LCLVersion = '1.6.4.0'
+  object tabTitles: TTabControl
+    Left = 8
+    Height = 616
+    Top = 8
+    Width = 563
+    TabOrder = 0
+    object GroupBox1: TGroupBox
+      Left = 8
+      Height = 576
+      Top = 32
+      Width = 544
+      ClientHeight = 556
+      ClientWidth = 540
+      TabOrder = 1
+      object mmEncode: TMemo
+        Left = 8
+        Height = 504
+        Top = 0
+        Width = 520
+        Lines.Strings = (
+          'MVCtranscoder'
+        )
+        TabOrder = 0
+      end
+      object btnProcessFile: TButton
+        Left = 381
+        Height = 33
+        Top = 512
+        Width = 147
+        Caption = 'Process File'
+        OnClick = btnProcessFileClick
+        TabOrder = 1
+      end
+      object pbarEncoding: TProgressBar
+        Left = 144
+        Height = 20
+        Top = 512
+        Width = 224
+        Style = pbstMarquee
+        TabOrder = 2
+        Visible = False
+      end
+      object stxtFrames: TStaticText
+        Left = 56
+        Height = 20
+        Top = 512
+        Width = 80
+        BorderStyle = sbsSingle
+        Caption = '0'
+        TabOrder = 3
+      end
+      object Label1: TLabel
+        Left = 8
+        Height = 15
+        Top = 512
+        Width = 41
+        Caption = 'Frames:'
+        ParentColor = False
+      end
+    end
+  end
+  object dlgOpen: TOpenDialog
+    Title = 'Open video file'
+    left = 10
+    top = 10
+  end
+  object dlgSave: TSaveDialog
+    Title = 'Save output video file as'
+    left = 80
+    top = 10
+  end
+  object tmrUpdate: TTimer
+    Interval = 200
+    OnTimer = tmrUpdateTimer
+    left = 39
+    top = 10
+  end
+end
