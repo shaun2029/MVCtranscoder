@@ -6,9 +6,11 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, ExtCtrls, Process, LCLType;
+  ComCtrls, ExtCtrls, Process, LCLType, Menus, Spin, Buttons;
 
 type
+  TEncSettings = (esAuto, esQVBR, esCQP, esVBR);
+
   TTranscode = record
     AProcess : TProcess;
     StdOutput: TStringList;
@@ -26,16 +28,33 @@ type
     dlgOpen: TOpenDialog;
     dlgSave: TSaveDialog;
     GroupBox1: TGroupBox;
+    GroupBox2: TGroupBox;
+    Image1: TImage;
     Label1: TLabel;
+    Label2: TLabel;
+    lblBitrate: TLabel;
+    lblMaxBitrate: TLabel;
+    lblQuality: TLabel;
+    mnuAddTab: TMenuItem;
     mmEncode: TMemo;
+    Panel1: TPanel;
     pbarEncoding: TProgressBar;
+    mnuTabs: TPopupMenu;
+    SpinEdit1: TSpinEdit;
+    seBitrate: TSpinEdit;
+    seMaxBitrate: TSpinEdit;
+    seQuality: TSpinEdit;
     stxtFrames: TStaticText;
+    tabSettings: TTabControl;
     tabTitles: TTabControl;
     tmrUpdate: TTimer;
+    procedure btnAddTabClick(Sender: TObject);
     procedure btnProcessFileClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
+    procedure mnuAddTabClick(Sender: TObject);
+    procedure tabSettingsChange(Sender: TObject);
     procedure tabTitlesChange(Sender: TObject);
     procedure tabTitlesChanging(Sender: TObject; var AllowChange: Boolean);
     procedure tmrUpdateTimer(Sender: TObject);
@@ -83,7 +102,31 @@ begin
   // In Windows the dir command cannot be used directly because it's a build-in
   // shell command. Therefore cmd.exe and the extra parameters are needed.
   Transcodes[Id].AProcess.Executable := 'MVCtranscode.exe';
-  Transcodes[Id].AProcess.Parameters.Text:=' mvc -dots -i "' + Transcodes[Id].SrcFile + '" mvc -o "' + Transcodes[Id].DstFile + '"';
+
+  if (tabSettings.TabIndex = Integer(esQVBR)) then
+  begin
+    Transcodes[Id].AProcess.Parameters.Text := ' mvc -dots -i "' + Transcodes[Id].SrcFile + '" mvc -o "'
+      + Transcodes[Id].DstFile + '" -qvbr ' + IntToStr(seQuality.Value)
+      + ' -b ' + IntToStr(seBitrate.Value) + ' -MaxKbps ' + IntToStr(seMaxBitrate.Value);
+  end
+  else if (tabSettings.TabIndex = Integer(esCQP)) then
+  begin
+    Transcodes[Id].AProcess.Parameters.Text := ' mvc -dots -i "' + Transcodes[Id].SrcFile + '" mvc -o "'
+      + Transcodes[Id].DstFile + '" -cqp ' + ' -qpi ' + IntToStr(seQuality.Value)
+      + ' -qpp ' + IntToStr(seQuality.Value) + ' -qpb ' + IntToStr(seQuality.Value);
+  end
+  else if (tabSettings.TabIndex = Integer(esVBR)) then
+  begin
+    Transcodes[Id].AProcess.Parameters.Text := ' mvc -dots -i "' + Transcodes[Id].SrcFile + '" mvc -o "'
+      + Transcodes[Id].DstFile + '" -vbr -b ' + IntToStr(seBitrate.Value) + ' -MaxKbps ' + IntToStr(seMaxBitrate.Value);
+  end
+  else
+  begin
+    Transcodes[Id].AProcess.Parameters.Text :=' mvc -dots -i "' + Transcodes[Id].SrcFile
+      + '" mvc -o "' + Transcodes[Id].DstFile + '"';
+  end;
+
+  mmEncode.Lines.Add(Transcodes[Id].AProcess.Parameters.Text);
 
   // Process option poUsePipes has to be used so the output can be captured.
   // Process option poWaitOnExit can not be used because that would block
@@ -168,6 +211,11 @@ begin
   else btnProcessFile.Tag := 2;
 end;
 
+procedure TfrmMain.btnAddTabClick(Sender: TObject);
+begin
+
+end;
+
 procedure TfrmMain.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 var
   t: integer;
@@ -207,11 +255,52 @@ end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
-  SetLength(Transcodes, 0);
+  SetLength(Transcodes, 2);
+end;
+
+procedure TfrmMain.mnuAddTabClick(Sender: TObject);
+begin
   AddTranscode();
-  AddTranscode();
-  AddTranscode();
-  AddTranscode();
+end;
+
+procedure TfrmMain.tabSettingsChange(Sender: TObject);
+begin
+  if (tabSettings.TabIndex = Integer(esQVBR)) then
+  begin
+    lblQuality.Enabled := true;
+    seQuality.Enabled := true;
+    lblBitrate.Enabled := true;
+    seBitrate.Enabled := true;
+    lblMaxBitrate.Enabled := true;
+    seMaxBitrate.Enabled := true;
+  end
+  else if (tabSettings.TabIndex = Integer(esCQP)) then
+  begin
+    lblQuality.Enabled := true;
+    seQuality.Enabled := true;
+    lblBitrate.Enabled := false;
+    seBitrate.Enabled := false;
+    lblMaxBitrate.Enabled := false;
+    seMaxBitrate.Enabled := false;
+  end
+  else if (tabSettings.TabIndex = Integer(esVBR)) then
+  begin
+    lblQuality.Enabled := false;
+    seQuality.Enabled := false;
+    lblBitrate.Enabled := true;
+    seBitrate.Enabled := true;
+    lblMaxBitrate.Enabled := true;
+    seMaxBitrate.Enabled := true;
+  end
+  else
+  begin
+    lblQuality.Enabled := false;
+    seQuality.Enabled := false;
+    lblBitrate.Enabled := false;
+    seBitrate.Enabled := false;
+    lblMaxBitrate.Enabled := false;
+    seMaxBitrate.Enabled := false;
+  end
 end;
 
 procedure TfrmMain.tabTitlesChange(Sender: TObject);
