@@ -17,11 +17,6 @@ object frmMain: TfrmMain
     Width = 528
     OnChange = tabTitlesChange
     OnChanging = tabTitlesChanging
-    TabIndex = 0
-    Tabs.Strings = (
-      '1'
-      '2'
-    )
     PopupMenu = mnuTabs
     TabOrder = 0
     object GroupBox1: TGroupBox

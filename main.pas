@@ -255,7 +255,9 @@ end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
-  SetLength(Transcodes, 2);
+  SetLength(Transcodes, 0);
+  AddTranscode();
+  AddTranscode();
 end;
 
 procedure TfrmMain.mnuAddTabClick(Sender: TObject);
