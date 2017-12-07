@@ -24,14 +24,23 @@ type
   { TfrmMain }
 
   TfrmMain = class(TForm)
+    btnInputFile: TBitBtn;
+    btnOutputFile: TBitBtn;
     btnProcessFile: TButton;
+    cbxInputHw: TCheckBox;
+    cbxOutputHw: TCheckBox;
     dlgOpen: TOpenDialog;
     dlgSave: TSaveDialog;
+    edtInputFile: TEdit;
+    edtOutputFile: TEdit;
     GroupBox1: TGroupBox;
     GroupBox2: TGroupBox;
+    GroupBox3: TGroupBox;
+    GroupBox4: TGroupBox;
     Image1: TImage;
     Label1: TLabel;
-    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
     lblBitrate: TLabel;
     lblMaxBitrate: TLabel;
     lblQuality: TLabel;
@@ -40,7 +49,7 @@ type
     Panel1: TPanel;
     pbarEncoding: TProgressBar;
     mnuTabs: TPopupMenu;
-    SpinEdit1: TSpinEdit;
+    rgrpCodec: TRadioGroup;
     seBitrate: TSpinEdit;
     seMaxBitrate: TSpinEdit;
     seQuality: TSpinEdit;
@@ -49,6 +58,8 @@ type
     tabTitles: TTabControl;
     tmrUpdate: TTimer;
     procedure btnAddTabClick(Sender: TObject);
+    procedure btnInputFileClick(Sender: TObject);
+    procedure btnOutputFileClick(Sender: TObject);
     procedure btnProcessFileClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -81,9 +92,8 @@ procedure TfrmMain.EncodeFile(Id: integer);
 const
   BUF_SIZE = 2048; // Buffer size for reading the output in chunks
 var
-  BytesRead: longint;
-  Buffer       : array[1..BUF_SIZE] of byte;
-  OutputString: String;
+  InputCodec: String;
+  OutputCodec: String;
 begin
   // Set up the process; as an example a recursive directory search is used
   // because that will usually result in a lot of data.
@@ -103,27 +113,56 @@ begin
   // shell command. Therefore cmd.exe and the extra parameters are needed.
   Transcodes[Id].AProcess.Executable := 'MVCtranscode.exe';
 
+  if rgrpCodec.ItemIndex = 0 then
+  begin
+    InputCodec := 'mvc';
+    OutputCodec := 'mvc';
+  end
+  else
+  begin
+    InputCodec := 'h264';
+    OutputCodec := 'h264';
+  end;
+
+  if cbxInputHw.Checked then
+  begin
+    InputCodec := InputCodec + ' -hw';
+  end
+  else
+  begin
+    InputCodec := InputCodec + ' -sw';
+  end;
+
+  if cbxOutputHw.Checked then
+  begin
+    OutputCodec := OutputCodec + ' -hw';
+  end
+  else
+  begin
+    OutputCodec := OutputCodec + ' -sw';
+  end;
+
   if (tabSettings.TabIndex = Integer(esQVBR)) then
   begin
-    Transcodes[Id].AProcess.Parameters.Text := ' mvc -dots -i "' + Transcodes[Id].SrcFile + '" mvc -o "'
+    Transcodes[Id].AProcess.Parameters.Text := ' ' + InputCodec + ' -dots -i "' + Transcodes[Id].SrcFile + '" ' + OutputCodec + ' -o "'
       + Transcodes[Id].DstFile + '" -qvbr ' + IntToStr(seQuality.Value)
       + ' -b ' + IntToStr(seBitrate.Value) + ' -MaxKbps ' + IntToStr(seMaxBitrate.Value);
   end
   else if (tabSettings.TabIndex = Integer(esCQP)) then
   begin
-    Transcodes[Id].AProcess.Parameters.Text := ' mvc -dots -i "' + Transcodes[Id].SrcFile + '" mvc -o "'
+    Transcodes[Id].AProcess.Parameters.Text := ' ' + InputCodec + ' -dots -i "' + Transcodes[Id].SrcFile + '" ' + OutputCodec + ' -o "'
       + Transcodes[Id].DstFile + '" -cqp ' + ' -qpi ' + IntToStr(seQuality.Value)
       + ' -qpp ' + IntToStr(seQuality.Value) + ' -qpb ' + IntToStr(seQuality.Value);
   end
   else if (tabSettings.TabIndex = Integer(esVBR)) then
   begin
-    Transcodes[Id].AProcess.Parameters.Text := ' mvc -dots -i "' + Transcodes[Id].SrcFile + '" mvc -o "'
+    Transcodes[Id].AProcess.Parameters.Text := ' ' + InputCodec + ' -dots -i "' + Transcodes[Id].SrcFile + '" ' + OutputCodec + ' -o "'
       + Transcodes[Id].DstFile + '" -vbr -b ' + IntToStr(seBitrate.Value) + ' -MaxKbps ' + IntToStr(seMaxBitrate.Value);
   end
   else
   begin
-    Transcodes[Id].AProcess.Parameters.Text :=' mvc -dots -i "' + Transcodes[Id].SrcFile
-      + '" mvc -o "' + Transcodes[Id].DstFile + '"';
+    Transcodes[Id].AProcess.Parameters.Text := ' ' + InputCodec + ' -dots -i "' + Transcodes[Id].SrcFile
+      + '" ' + OutputCodec + ' -o "' + Transcodes[Id].DstFile + '"';
   end;
 
   mmEncode.Lines.Add(Transcodes[Id].AProcess.Parameters.Text);
@@ -195,11 +234,29 @@ var
 begin
   if (btnProcessFile.Tag = 0) then
   begin
-    if dlgOpen.Execute and dlgSave.Execute then
+    t := tabTitles.TabIndex;
+
+    if (edtInputFile.Text = '') then
+    begin
+      ShowMessage('Please select an input file.');
+    end
+    else if (edtOutputFile.Text = '') then
+    begin
+      ShowMessage('Please select an output file.');
+    end
+    else if not FileExists(edtInputFile.Text) then
+    begin
+      ShowMessage('The input file could not be found, Please select a valid input file!');
+    end
+    else if (edtInputFile.Text = edtOutputFile.Text) then
+    begin
+      ShowMessage('The input and output files can''t be the same file!');
+    end
+    else
     begin
       t := tabTitles.TabIndex;
-      Transcodes[t].SrcFile := dlgOpen.FileName;
-      Transcodes[t].DstFile := dlgSave.FileName;
+      Transcodes[t].SrcFile := edtInputFile.Text;
+      Transcodes[t].DstFile := edtOutputFile.Text;
 
       btnProcessFile.Caption := 'Abort Processing';
       btnProcessFile.Tag := 1;
@@ -214,6 +271,22 @@ end;
 procedure TfrmMain.btnAddTabClick(Sender: TObject);
 begin
 
+end;
+
+procedure TfrmMain.btnInputFileClick(Sender: TObject);
+begin
+  if dlgOpen.Execute then
+  begin
+    edtInputFile.Text := Trim(dlgOpen.FileName);
+  end;
+end;
+
+procedure TfrmMain.btnOutputFileClick(Sender: TObject);
+begin
+  if dlgSave.Execute then
+  begin
+    edtOutputFile.Text := Trim(dlgSave.FileName);
+  end;
 end;
 
 procedure TfrmMain.FormClose(Sender: TObject; var CloseAction: TCloseAction);
