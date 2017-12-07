@@ -9,7 +9,7 @@ uses
   ComCtrls, ExtCtrls, Process, LCLType, Menus, Spin, Buttons;
 
 type
-  TEncSettings = (esAuto, esQVBR, esCQP, esVBR);
+  TEncSettings = (esAuto, esCQP, esVBR, esQVBR);
 
   TTranscode = record
     AProcess : TProcess;
@@ -61,6 +61,7 @@ type
     procedure btnInputFileClick(Sender: TObject);
     procedure btnOutputFileClick(Sender: TObject);
     procedure btnProcessFileClick(Sender: TObject);
+    procedure cbxOutputHwChange(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
@@ -268,6 +269,24 @@ begin
   else btnProcessFile.Tag := 2;
 end;
 
+procedure TfrmMain.cbxOutputHwChange(Sender: TObject);
+begin
+  if cbxOutputHw.Checked then
+  begin
+    if tabSettings.Tabs.Count < 4 then
+    begin
+      tabSettings.Tabs.Add('QVBR');
+    end;
+  end
+  else
+  begin
+    if tabSettings.Tabs.Count > 3 then
+    begin
+      tabSettings.Tabs.Delete(3);
+    end;
+  end;
+end;
+
 procedure TfrmMain.btnAddTabClick(Sender: TObject);
 begin
 
@@ -342,12 +361,24 @@ procedure TfrmMain.tabSettingsChange(Sender: TObject);
 begin
   if (tabSettings.TabIndex = Integer(esQVBR)) then
   begin
-    lblQuality.Enabled := true;
-    seQuality.Enabled := true;
-    lblBitrate.Enabled := true;
-    seBitrate.Enabled := true;
-    lblMaxBitrate.Enabled := true;
-    seMaxBitrate.Enabled := true;
+    if cbxOutputHw.Checked then
+    begin
+      lblQuality.Enabled := true;
+      seQuality.Enabled := true;
+      lblBitrate.Enabled := true;
+      seBitrate.Enabled := true;
+      lblMaxBitrate.Enabled := true;
+      seMaxBitrate.Enabled := true;
+    end
+    else
+    begin
+      lblQuality.Enabled := true;
+      seQuality.Enabled := true;
+      lblBitrate.Enabled := false;
+      seBitrate.Enabled := false;
+      lblMaxBitrate.Enabled := false;
+      seMaxBitrate.Enabled := false;
+    end;
   end
   else if (tabSettings.TabIndex = Integer(esCQP)) then
   begin

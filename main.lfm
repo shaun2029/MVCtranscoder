@@ -1,11 +1,12 @@
 object frmMain: TfrmMain
-  Left = 168
+  Left = 657
   Height = 648
-  Top = 116
-  Width = 539
+  Top = 166
+  Width = 540
+  BorderStyle = bsSingle
   Caption = 'MVCTranscoder'
   ClientHeight = 648
-  ClientWidth = 539
+  ClientWidth = 540
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -119,7 +120,7 @@ object frmMain: TfrmMain
   object GroupBox2: TGroupBox
     Left = 5
     Height = 98
-    Top = 8
+    Top = 60
     Width = 529
     Caption = 'Birtate Control Method'
     ClientHeight = 78
@@ -134,9 +135,9 @@ object frmMain: TfrmMain
       TabIndex = 0
       Tabs.Strings = (
         'Auto'
-        'QVBR'
         'CQP'
         'VBR'
+        'QVBR'
       )
       TabOrder = 0
       object lblBitrate: TLabel
@@ -206,7 +207,7 @@ object frmMain: TfrmMain
   object rgrpCodec: TRadioGroup
     Left = 5
     Height = 48
-    Top = 112
+    Top = 8
     Width = 259
     AutoFill = True
     Caption = 'Codec'
@@ -230,7 +231,7 @@ object frmMain: TfrmMain
   object GroupBox3: TGroupBox
     Left = 5
     Height = 88
-    Top = 160
+    Top = 162
     Width = 529
     Caption = 'Files'
     ClientHeight = 68
@@ -288,7 +289,7 @@ object frmMain: TfrmMain
   object GroupBox4: TGroupBox
     Left = 272
     Height = 49
-    Top = 112
+    Top = 8
     Width = 262
     Caption = 'Harware Acceleration'
     ClientHeight = 29
@@ -309,6 +310,7 @@ object frmMain: TfrmMain
       Width = 70
       Caption = 'Encoding'
       Checked = True
+      OnChange = cbxOutputHwChange
       State = cbChecked
       TabOrder = 1
     end
