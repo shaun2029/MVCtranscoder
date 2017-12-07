@@ -19,6 +19,7 @@ type
     SrcFile, DstFile: String;
     MemoText: string;
     Running: boolean;
+    StartTime: qword;
   end;
 
   { TfrmMain }
@@ -37,6 +38,7 @@ type
     GroupBox2: TGroupBox;
     GroupBox3: TGroupBox;
     GroupBox4: TGroupBox;
+    GroupBox5: TGroupBox;
     Image1: TImage;
     Label1: TLabel;
     Label3: TLabel;
@@ -57,6 +59,7 @@ type
     tabSettings: TTabControl;
     tabTitles: TTabControl;
     tmrUpdate: TTimer;
+    tbarSpeed: TTrackBar;
     procedure btnAddTabClick(Sender: TObject);
     procedure btnInputFileClick(Sender: TObject);
     procedure btnOutputFileClick(Sender: TObject);
@@ -143,6 +146,9 @@ begin
     OutputCodec := OutputCodec + ' -sw';
   end;
 
+  OutputCodec := OutputCodec + ' -u '
+    + IntToStr(tbarSpeed.Position);
+
   if (tabSettings.TabIndex = Integer(esQVBR)) then
   begin
     Transcodes[Id].AProcess.Parameters.Text := ' ' + InputCodec + ' -dots -i "' + Transcodes[Id].SrcFile + '" ' + OutputCodec + ' -o "'
@@ -175,6 +181,7 @@ begin
 
   // Start the process (run the dir/ls command)
   Transcodes[Id].AProcess.Execute;
+  Transcodes[Id].StartTime := GetTickCount64();
 end;
 
 procedure TfrmMain.UpdateProgress(Id: integer);
@@ -296,6 +303,9 @@ procedure TfrmMain.btnInputFileClick(Sender: TObject);
 begin
   if dlgOpen.Execute then
   begin
+    if dlgOpen.InitialDir = '' then
+       dlgOpen.InitialDir := dlgSave.InitialDir;
+
     edtInputFile.Text := Trim(dlgOpen.FileName);
   end;
 end;
@@ -304,6 +314,9 @@ procedure TfrmMain.btnOutputFileClick(Sender: TObject);
 begin
   if dlgSave.Execute then
   begin
+    if dlgSave.InitialDir = '' then
+       dlgSave.InitialDir := dlgOpen.InitialDir;
+
     edtOutputFile.Text := Trim(dlgSave.FileName);
   end;
 end;
@@ -439,6 +452,8 @@ procedure TfrmMain.tmrUpdateTimer(Sender: TObject);
 var
   t: integer;
   OutputString: string;
+  Ticks: qword;
+  Fps: integer;
 begin
   for t := 0 to High(Transcodes) do
   begin
@@ -462,6 +477,14 @@ begin
           btnProcessFile.Tag := 1;
           pbarEncoding.Visible := True;
         end;
+
+        Ticks := GetTickCount64;
+        if (Ticks - Transcodes[t].StartTime > 1000) then
+          Fps := (Transcodes[t].Frames * 1000) div (Ticks - Transcodes[t].StartTime)
+        else
+          Fps := 0;
+
+        stxtFrames.Caption := IntToStr(Transcodes[t].Frames) + ' ' + IntToStr(Fps) + ' fps';
       end
       else
       begin
@@ -471,15 +494,15 @@ begin
           btnProcessFile.Tag := 0;
           btnProcessFile.Caption := 'Process File';
         end;
-      end;
 
-      stxtFrames.Caption := IntToStr(Transcodes[t].Frames);
+        stxtFrames.Caption := IntToStr(Transcodes[t].Frames);
+      end
     end;
 
     if Transcodes[t].Running then
        TabTitles.Tabs[t] := IntToStr(t+1) + ' ' + IntToStr(Transcodes[t].Frames)
     else
-        TabTitles.Tabs[t] := IntToStr(t+1);
+       TabTitles.Tabs[t] := IntToStr(t+1);
   end;
 end;
 
