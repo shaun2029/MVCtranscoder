@@ -14,12 +14,12 @@ type
   TTranscode = record
     AProcess : TProcess;
     StdOutput: TStringList;
-    StdErr: TStringList;
     Frames : longint;
     SrcFile, DstFile: String;
     MemoText: string;
     Running: boolean;
     StartTime: qword;
+    Fps: integer;
   end;
 
   { TfrmMain }
@@ -41,6 +41,7 @@ type
     GroupBox5: TGroupBox;
     Image1: TImage;
     Label1: TLabel;
+    Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
     lblBitrate: TLabel;
@@ -49,13 +50,13 @@ type
     mnuAddTab: TMenuItem;
     mmEncode: TMemo;
     Panel1: TPanel;
-    pbarEncoding: TProgressBar;
     mnuTabs: TPopupMenu;
     rgrpCodec: TRadioGroup;
     seBitrate: TSpinEdit;
     seMaxBitrate: TSpinEdit;
     seQuality: TSpinEdit;
     stxtFrames: TStaticText;
+    stxtFps: TStaticText;
     tabSettings: TTabControl;
     tabTitles: TTabControl;
     tmrUpdate: TTimer;
@@ -107,8 +108,6 @@ begin
   Transcodes[Id].AProcess := TProcess.Create(nil);
 
   mmEncode.Clear;
-  Transcodes[Id].StdOutput.Clear;
-  Transcodes[Id].StdErr.Clear;
   Transcodes[Id].Running := True;
   Transcodes[Id].Frames := 0;
 
@@ -172,14 +171,13 @@ begin
       + '" ' + OutputCodec + ' -o "' + Transcodes[Id].DstFile + '"';
   end;
 
-  mmEncode.Lines.Add(Transcodes[Id].AProcess.Parameters.Text);
-
   // Process option poUsePipes has to be used so the output can be captured.
   // Process option poWaitOnExit can not be used because that would block
   // this program, preventing it from reading the output data of the process.
   Transcodes[Id].AProcess.Options := [poUsePipes, poNoConsole];
 
   // Start the process (run the dir/ls command)
+  Transcodes[Id].StdOutput.Add(Transcodes[Id].AProcess.Parameters.Text);
   Transcodes[Id].AProcess.Execute;
   Transcodes[Id].StartTime := GetTickCount64();
 end;
@@ -202,7 +200,6 @@ begin
     begin
       BytesRead := Transcodes[Id].AProcess.Output.Read(Buffer, BUF_SIZE);
       SetString(OutputString, PAnsiChar(@Buffer[1]), BytesRead);
-      mmEncode.Lines.Add(OutputString);
       Transcodes[Id].StdOutput.Add(OutputString);
     end;
 
@@ -218,16 +215,14 @@ begin
       begin
         { There is a genuine error message. }
         SetString(OutputString, PAnsiChar(@Buffer[1]), BytesRead);
-        mmEncode.Lines.Add(OutputString);
-        Transcodes[Id].StdErr.Add(OutputString);
+        Transcodes[Id].StdOutput.Add(OutputString);
 
         { Read entire error message. }
         if (Transcodes[Id].AProcess.Stderr.NumBytesAvailable > 0) then
         begin
           BytesRead := Transcodes[Id].AProcess.Stderr.Read(Buffer, BUF_SIZE);
           SetString(OutputString, PAnsiChar(@Buffer[1]), BytesRead);
-          mmEncode.Lines.Add(OutputString);
-          Transcodes[Id].StdErr.Add(OutputString);
+          Transcodes[Id].StdOutput.Add(OutputString);
         end;
       end;
     end;
@@ -263,12 +258,13 @@ begin
     else
     begin
       t := tabTitles.TabIndex;
+      Transcodes[t].StdOutput.Clear;
+
       Transcodes[t].SrcFile := edtInputFile.Text;
       Transcodes[t].DstFile := edtOutputFile.Text;
 
       btnProcessFile.Caption := 'Abort Processing';
       btnProcessFile.Tag := 1;
-      pbarEncoding.Visible := True;
       stxtFrames.Caption := '';
       EncodeFile(t);
     end;
@@ -465,9 +461,11 @@ begin
       begin
         Transcodes[t].AProcess.Terminate(1);
         OutputString := 'Processing ABORTED!';
-        mmEncode.Lines.Add(OutputString);
         Transcodes[t].StdOutput.Add(OutputString);
       end;
+
+      if Transcodes[t].StdOutput.Text <> mmEncode.Lines.Text then
+         mmEncode.Text := Transcodes[t].StdOutput.Text;
 
       if Transcodes[t].Running then
       begin
@@ -475,7 +473,6 @@ begin
         begin
           btnProcessFile.Caption := 'Abort Processing';
           btnProcessFile.Tag := 1;
-          pbarEncoding.Visible := True;
         end;
 
         Ticks := GetTickCount64;
@@ -484,19 +481,19 @@ begin
         else
           Fps := 0;
 
-        stxtFrames.Caption := IntToStr(Transcodes[t].Frames) + ' ' + IntToStr(Fps) + ' fps';
+        Transcodes[t].Fps := Fps;
       end
       else
       begin
         if (btnProcessFile.Tag <> 0) then
         begin
-          pbarEncoding.Visible := False;
           btnProcessFile.Tag := 0;
           btnProcessFile.Caption := 'Process File';
         end;
+      end;
 
-        stxtFrames.Caption := IntToStr(Transcodes[t].Frames);
-      end
+      stxtFrames.Caption := IntToStr(Transcodes[t].Frames);
+      stxtFps.Caption := IntToStr(Transcodes[t].Fps);
     end;
 
     if Transcodes[t].Running then
@@ -517,11 +514,13 @@ begin
 
   Transcodes[t].AProcess := TProcess.Create(nil);
   Transcodes[t].Frames := 0;
+  Transcodes[t].Fps := 0;
   Transcodes[t].StdOutput := TStringList.Create;
-  Transcodes[t].StdErr := TStringList.Create;
   Transcodes[t].SrcFile:='';
   Transcodes[t].DstFile:='';
   Transcodes[t].Running := False;
+
+  Result := 0;
 end;
 
 end.
