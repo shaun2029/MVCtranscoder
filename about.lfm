@@ -763,7 +763,7 @@ object frmAbout: TfrmAbout
       Top = 0
       Width = 334
       Align = alClient
-      Caption = 'MVCtranscode'#13#10#13#10'Copyright Shaun Simpson'#13#10'Released under version 3 of the GNU General Public License.'#13#10#13#10'Latest Release avaliable from:'
+      Caption = 'MVCtranscode'#13#10#13#10'Copyright (c) 2017 Shaun Simpson.'#13#10'Released under version 3 of the GNU General Public License.'#13#10#13#10'Latest Release avaliable from:'
       OnClick = Label1Click
       OnDblClick = Label1Click
       OnMouseEnter = Label1MouseEnter
