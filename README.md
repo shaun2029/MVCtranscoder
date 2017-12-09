@@ -8,7 +8,7 @@ Software only decoding/encoding options are offered for systems without Intel Qu
         Although not guaranteed, default settings are aimed at bluray compliance.
         These defaults are also geared towards high quality at a reasonable size.
 
-## MVC H264 Encoding Performance
+## MVC H264 Encoding Performance (balanced encoding speed)
 ```
         Hardware on I7-7700 ~76fps
         Software on I7-7700 ~12fps (OS Linux with WINE)
