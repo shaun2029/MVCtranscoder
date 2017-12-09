@@ -1,6 +1,4 @@
 # MVCtranscoder
-Copyright (c) 2017, Shaun Simpson
-
 
 MVCtranscoder can be used to transcode 3D/2D h264 streams with the aim of reducing the bitrate.
 By default Intel Quick Sync hardware accelerated encoding is used.
