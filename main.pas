@@ -344,8 +344,8 @@ begin
     if dlgOpen.InitialDir = '' then
        dlgOpen.InitialDir := dlgSave.InitialDir;
 
-    if (lbxInputFiles.Count > 1) then
-       lbxInputFiles.Items[1] := Trim(dlgOpen.FileName)
+    if (lbxInputFiles.Count > 0) then
+       lbxInputFiles.Items[0] := Trim(dlgOpen.FileName)
     else
       lbxInputFiles.AddItem(Trim(dlgOpen.FileName), Nil);
   end;
