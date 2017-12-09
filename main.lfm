@@ -1,20 +1,20 @@
 object frmMain: TfrmMain
-  Left = 657
-  Height = 656
-  Top = 166
-  Width = 540
+  Left = 265
+  Height = 465
+  Top = 167
+  Width = 1018
   BorderStyle = bsSingle
   Caption = 'MVCTranscoder'
-  ClientHeight = 656
-  ClientWidth = 540
+  ClientHeight = 465
+  ClientWidth = 1018
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   LCLVersion = '1.6.4.0'
   object tabTitles: TTabControl
-    Left = 5
-    Height = 392
-    Top = 256
+    Left = 480
+    Height = 448
+    Top = 8
     Width = 529
     OnChange = tabTitlesChange
     OnChanging = tabTitlesChanging
@@ -22,27 +22,28 @@ object frmMain: TfrmMain
     TabOrder = 0
     object GroupBox1: TGroupBox
       Left = 7
-      Height = 352
+      Height = 408
       Top = 32
       Width = 512
-      ClientHeight = 332
+      ClientHeight = 388
       ClientWidth = 508
       TabOrder = 1
       object mmEncode: TMemo
         Left = 8
-        Height = 280
+        Height = 336
         Top = 0
         Width = 492
         Lines.Strings = (
           'MVCtranscoder'
         )
+        ReadOnly = True
         ScrollBars = ssAutoBoth
         TabOrder = 0
       end
       object btnProcessFile: TButton
         Left = 377
         Height = 38
-        Top = 288
+        Top = 344
         Width = 123
         Caption = 'Process File'
         OnClick = btnProcessFileClick
@@ -51,7 +52,7 @@ object frmMain: TfrmMain
       object stxtFrames: TStaticText
         Left = 59
         Height = 20
-        Top = 288
+        Top = 344
         Width = 101
         BorderStyle = sbsSingle
         Caption = '0'
@@ -60,7 +61,7 @@ object frmMain: TfrmMain
       object Label1: TLabel
         Left = 11
         Height = 15
-        Top = 288
+        Top = 344
         Width = 41
         Caption = 'Frames:'
         ParentColor = False
@@ -68,7 +69,7 @@ object frmMain: TfrmMain
       object Label2: TLabel
         Left = 185
         Height = 15
-        Top = 288
+        Top = 344
         Width = 21
         Caption = 'Fps:'
         ParentColor = False
@@ -76,7 +77,7 @@ object frmMain: TfrmMain
       object stxtFps: TStaticText
         Left = 216
         Height = 20
-        Top = 288
+        Top = 344
         Width = 101
         BorderStyle = sbsSingle
         Caption = '0'
@@ -125,19 +126,19 @@ object frmMain: TfrmMain
     end
   end
   object GroupBox2: TGroupBox
-    Left = 5
-    Height = 98
-    Top = 60
-    Width = 529
+    Left = 8
+    Height = 144
+    Top = 152
+    Width = 464
     Caption = 'Birtate Control Method'
-    ClientHeight = 78
-    ClientWidth = 525
+    ClientHeight = 124
+    ClientWidth = 460
     TabOrder = 1
     object tabSettings: TTabControl
-      Left = 8
-      Height = 66
+      Left = 6
+      Height = 112
       Top = 8
-      Width = 509
+      Width = 448
       OnChange = tabSettingsChange
       TabIndex = 0
       Tabs.Strings = (
@@ -148,18 +149,18 @@ object frmMain: TfrmMain
       )
       TabOrder = 0
       object lblBitrate: TLabel
-        Left = 184
+        Left = 40
         Height = 15
-        Top = 32
+        Top = 80
         Width = 34
         Caption = 'Bitrate'
         Enabled = False
         ParentColor = False
       end
       object seBitrate: TSpinEdit
-        Left = 240
+        Left = 96
         Height = 23
-        Top = 32
+        Top = 80
         Width = 66
         Enabled = False
         Increment = 1000
@@ -169,9 +170,9 @@ object frmMain: TfrmMain
         Value = 20000
       end
       object seMaxBitrate: TSpinEdit
-        Left = 416
+        Left = 320
         Height = 23
-        Top = 32
+        Top = 80
         Width = 66
         Enabled = False
         Increment = 1000
@@ -181,27 +182,27 @@ object frmMain: TfrmMain
         Value = 40000
       end
       object lblMaxBitrate: TLabel
-        Left = 336
+        Left = 248
         Height = 15
-        Top = 32
+        Top = 80
         Width = 59
         Caption = 'Max Bitrate'
         Enabled = False
         ParentColor = False
       end
       object lblQuality: TLabel
-        Left = 16
+        Left = 40
         Height = 15
-        Top = 32
+        Top = 40
         Width = 38
         Caption = 'Quality'
         Enabled = False
         ParentColor = False
       end
       object seQuality: TSpinEdit
-        Left = 72
+        Left = 96
         Height = 23
-        Top = 32
+        Top = 40
         Width = 66
         Enabled = False
         MaxValue = 51
@@ -212,10 +213,10 @@ object frmMain: TfrmMain
     end
   end
   object rgrpCodec: TRadioGroup
-    Left = 5
-    Height = 48
-    Top = 8
-    Width = 187
+    Left = 16
+    Height = 64
+    Top = 80
+    Width = 224
     AutoFill = True
     Caption = 'Codec'
     ChildSizing.LeftRightSpacing = 6
@@ -225,32 +226,25 @@ object frmMain: TfrmMain
     ChildSizing.ShrinkVertical = crsScaleChilds
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 2
-    ClientHeight = 28
-    ClientWidth = 183
+    ClientHeight = 44
+    ClientWidth = 220
     Columns = 2
     ItemIndex = 0
     Items.Strings = (
-      '3d mvc h264'
-      '2d h264'
+      '3D H264'
+      '2D H264'
     )
     TabOrder = 2
   end
   object GroupBox3: TGroupBox
     Left = 5
-    Height = 88
-    Top = 162
-    Width = 529
+    Height = 152
+    Top = 304
+    Width = 467
     Caption = 'Files'
-    ClientHeight = 68
-    ClientWidth = 525
+    ClientHeight = 132
+    ClientWidth = 463
     TabOrder = 3
-    object edtInputFile: TEdit
-      Left = 56
-      Height = 23
-      Top = 8
-      Width = 432
-      TabOrder = 0
-    end
     object Label3: TLabel
       Left = 8
       Height = 15
@@ -260,50 +254,64 @@ object frmMain: TfrmMain
       ParentColor = False
     end
     object btnInputFile: TBitBtn
-      Left = 493
+      Left = 433
       Height = 23
       Top = 8
       Width = 24
-      Caption = '..'
+      Caption = '+'
       OnClick = btnInputFileClick
-      TabOrder = 1
+      TabOrder = 0
     end
     object Label4: TLabel
       Left = 8
       Height = 15
-      Top = 36
+      Top = 72
       Width = 38
       Caption = 'Output'
       ParentColor = False
     end
-    object edtOutputFile: TEdit
-      Left = 56
+    object btnOutputFile: TBitBtn
+      Left = 433
       Height = 23
-      Top = 36
-      Width = 432
+      Top = 72
+      Width = 24
+      Caption = '+'
+      OnClick = btnOutputFileClick
+      TabOrder = 1
+    end
+    object lbxInputFiles: TListBox
+      Left = 57
+      Height = 48
+      Top = 8
+      Width = 368
+      ItemHeight = 0
+      OnDblClick = lbxInputFilesDblClick
+      PopupMenu = mnuInputFiles
       TabOrder = 2
     end
-    object btnOutputFile: TBitBtn
-      Left = 493
-      Height = 23
-      Top = 36
-      Width = 24
-      Caption = '..'
-      OnClick = btnOutputFileClick
+    object lbxOutputFiles: TListBox
+      Tag = 1
+      Left = 57
+      Height = 48
+      Top = 72
+      Width = 369
+      ItemHeight = 0
+      OnDblClick = lbxOutputFilesDblClick
+      PopupMenu = mnuOutputFiles
       TabOrder = 3
     end
   end
   object GroupBox4: TGroupBox
-    Left = 200
-    Height = 49
+    Left = 11
+    Height = 57
     Top = 8
-    Width = 192
+    Width = 461
     Caption = 'Harware Acceleration'
-    ClientHeight = 29
-    ClientWidth = 188
+    ClientHeight = 37
+    ClientWidth = 457
     TabOrder = 4
     object cbxInputHw: TCheckBox
-      Left = 8
+      Left = 16
       Height = 19
       Top = 5
       Width = 71
@@ -311,7 +319,7 @@ object frmMain: TfrmMain
       TabOrder = 0
     end
     object cbxOutputHw: TCheckBox
-      Left = 104
+      Left = 232
       Height = 19
       Top = 5
       Width = 70
@@ -323,19 +331,19 @@ object frmMain: TfrmMain
     end
   end
   object GroupBox5: TGroupBox
-    Left = 400
-    Height = 48
-    Top = 8
-    Width = 134
+    Left = 248
+    Height = 64
+    Top = 80
+    Width = 222
     Caption = 'Quality \ Speed'
-    ClientHeight = 28
-    ClientWidth = 130
+    ClientHeight = 44
+    ClientWidth = 218
     TabOrder = 5
     object tbarSpeed: TTrackBar
-      Left = 8
+      Left = 16
       Height = 25
       Top = 0
-      Width = 112
+      Width = 192
       Max = 7
       Min = 1
       Position = 1
@@ -345,26 +353,62 @@ object frmMain: TfrmMain
   end
   object dlgOpen: TOpenDialog
     Title = 'Open video file'
-    left = 223
-    top = 256
+    left = 698
+    top = 160
   end
   object dlgSave: TSaveDialog
     Title = 'Save output video file as'
-    left = 319
-    top = 256
+    left = 794
+    top = 160
   end
   object tmrUpdate: TTimer
     Interval = 200
     OnTimer = tmrUpdateTimer
-    left = 271
-    top = 256
+    left = 746
+    top = 160
   end
   object mnuTabs: TPopupMenu
-    left = 181
-    top = 256
+    left = 656
+    top = 160
     object mnuAddTab: TMenuItem
       Caption = 'Add Tab'
       OnClick = mnuAddTabClick
+    end
+  end
+  object mnuInputFiles: TPopupMenu
+    left = 656
+    top = 224
+    object mnuAddFile: TMenuItem
+      Caption = 'Add File'
+      OnClick = mnuAddFileClick
+    end
+    object mnuRemoveFile: TMenuItem
+      Caption = 'Remove File'
+      OnClick = mnuRemoveFileClick
+    end
+    object mnuSwitchFiles: TMenuItem
+      Caption = 'Switch File Positions'
+      OnClick = mnuSwitchFilesClick
+    end
+  end
+  object mnuOutputFiles: TPopupMenu
+    Tag = 1
+    left = 746
+    top = 224
+    object mnuAddFile1: TMenuItem
+      Tag = 1
+      Caption = 'Add File'
+      OnClick = mnuAddFileClick
+    end
+    object mnuRemoveFile1: TMenuItem
+      Tag = 1
+      Caption = 'Remove File'
+      OnClick = mnuRemoveFileClick
+    end
+    object mnuSwitchFiles1: TMenuItem
+      Tag = 1
+      Caption = 'Switch File Positions'
+      OnClick = mnuSwitchFilesClick
     end
   end
 end

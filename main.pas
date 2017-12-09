@@ -15,7 +15,7 @@ type
     AProcess : TProcess;
     StdOutput: TStringList;
     Frames : longint;
-    SrcFile, DstFile: String;
+    SrcFile, DstFile: array [0..1] of String;
     MemoText: string;
     Running: boolean;
     StartTime: qword;
@@ -32,8 +32,6 @@ type
     cbxOutputHw: TCheckBox;
     dlgOpen: TOpenDialog;
     dlgSave: TSaveDialog;
-    edtInputFile: TEdit;
-    edtOutputFile: TEdit;
     GroupBox1: TGroupBox;
     GroupBox2: TGroupBox;
     GroupBox3: TGroupBox;
@@ -47,10 +45,20 @@ type
     lblBitrate: TLabel;
     lblMaxBitrate: TLabel;
     lblQuality: TLabel;
+    lbxInputFiles: TListBox;
+    lbxOutputFiles: TListBox;
+    mnuAddFile1: TMenuItem;
+    mnuOutputFiles: TPopupMenu;
+    mnuRemoveFile1: TMenuItem;
+    mnuSwitchFiles: TMenuItem;
+    mnuRemoveFile: TMenuItem;
+    mnuAddFile: TMenuItem;
     mnuAddTab: TMenuItem;
     mmEncode: TMemo;
+    mnuSwitchFiles1: TMenuItem;
     Panel1: TPanel;
     mnuTabs: TPopupMenu;
+    mnuInputFiles: TPopupMenu;
     rgrpCodec: TRadioGroup;
     seBitrate: TSpinEdit;
     seMaxBitrate: TSpinEdit;
@@ -69,7 +77,12 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
+    procedure lbxInputFilesDblClick(Sender: TObject);
+    procedure lbxOutputFilesDblClick(Sender: TObject);
+    procedure mnuAddFileClick(Sender: TObject);
     procedure mnuAddTabClick(Sender: TObject);
+    procedure mnuRemoveFileClick(Sender: TObject);
+    procedure mnuSwitchFilesClick(Sender: TObject);
     procedure tabSettingsChange(Sender: TObject);
     procedure tabTitlesChange(Sender: TObject);
     procedure tabTitlesChanging(Sender: TObject; var AllowChange: Boolean);
@@ -98,7 +111,7 @@ const
   BUF_SIZE = 2048; // Buffer size for reading the output in chunks
 var
   InputCodec: String;
-  OutputCodec: String;
+  OutputCodec, SrcFiles, DstFiles: String;
 begin
   // Set up the process; as an example a recursive directory search is used
   // because that will usually result in a lot of data.
@@ -148,27 +161,35 @@ begin
   OutputCodec := OutputCodec + ' -u '
     + IntToStr(tbarSpeed.Position);
 
+
+  SrcFiles := ' -dots -i "' + Transcodes[Id].SrcFile[0] + '"';
+  if (Transcodes[Id].SrcFile[1] <> '') then
+    SrcFiles := SrcFiles + ' -i "' + Transcodes[Id].SrcFile[1] + '"';
+
+  DstFiles := ' -o "' + Transcodes[Id].DstFile[0] + '"';
+  if (Transcodes[Id].DstFile[1] <> '') then
+    DstFiles := ' -viewoutput ' + DstFiles + ' -o "' + Transcodes[Id].DstFile[1] + '"';
+
   if (tabSettings.TabIndex = Integer(esQVBR)) then
   begin
-    Transcodes[Id].AProcess.Parameters.Text := ' ' + InputCodec + ' -dots -i "' + Transcodes[Id].SrcFile + '" ' + OutputCodec + ' -o "'
-      + Transcodes[Id].DstFile + '" -qvbr ' + IntToStr(seQuality.Value)
+    Transcodes[Id].AProcess.Parameters.Text := ' ' + InputCodec + SrcFiles + ' ' + OutputCodec
+      + DstFiles + ' -qvbr ' + IntToStr(seQuality.Value)
       + ' -b ' + IntToStr(seBitrate.Value) + ' -MaxKbps ' + IntToStr(seMaxBitrate.Value);
   end
   else if (tabSettings.TabIndex = Integer(esCQP)) then
   begin
-    Transcodes[Id].AProcess.Parameters.Text := ' ' + InputCodec + ' -dots -i "' + Transcodes[Id].SrcFile + '" ' + OutputCodec + ' -o "'
-      + Transcodes[Id].DstFile + '" -cqp ' + ' -qpi ' + IntToStr(seQuality.Value)
+    Transcodes[Id].AProcess.Parameters.Text := ' ' + InputCodec + SrcFiles + ' ' + OutputCodec
+      + DstFiles + ' -cqp ' + ' -qpi ' + IntToStr(seQuality.Value)
       + ' -qpp ' + IntToStr(seQuality.Value) + ' -qpb ' + IntToStr(seQuality.Value);
   end
   else if (tabSettings.TabIndex = Integer(esVBR)) then
   begin
-    Transcodes[Id].AProcess.Parameters.Text := ' ' + InputCodec + ' -dots -i "' + Transcodes[Id].SrcFile + '" ' + OutputCodec + ' -o "'
-      + Transcodes[Id].DstFile + '" -vbr -b ' + IntToStr(seBitrate.Value) + ' -MaxKbps ' + IntToStr(seMaxBitrate.Value);
+    Transcodes[Id].AProcess.Parameters.Text := ' ' + InputCodec + SrcFiles + ' ' + OutputCodec
+      + DstFiles + ' -vbr -b ' + IntToStr(seBitrate.Value) + ' -MaxKbps ' + IntToStr(seMaxBitrate.Value);
   end
   else
   begin
-    Transcodes[Id].AProcess.Parameters.Text := ' ' + InputCodec + ' -dots -i "' + Transcodes[Id].SrcFile
-      + '" ' + OutputCodec + ' -o "' + Transcodes[Id].DstFile + '"';
+    Transcodes[Id].AProcess.Parameters.Text := ' ' + InputCodec + SrcFiles + ' ' + OutputCodec + DstFiles;
   end;
 
   // Process option poUsePipes has to be used so the output can be captured.
@@ -239,19 +260,26 @@ begin
   begin
     t := tabTitles.TabIndex;
 
-    if (edtInputFile.Text = '') then
+    if (lbxInputFiles.Count = 0) then
     begin
       ShowMessage('Please select an input file.');
     end
-    else if (edtOutputFile.Text = '') then
+    else if (lbxOutputFiles.Count = 0) then
     begin
       ShowMessage('Please select an output file.');
     end
-    else if not FileExists(edtInputFile.Text) then
+    else if not FileExists(lbxInputFiles.Items[0]) then
     begin
-      ShowMessage('The input file could not be found, Please select a valid input file!');
+      ShowMessage('The input file could not be found:' + LineEnding
+      + lbxInputFiles.Items[0] + LineEnding + 'Please select a valid input file!');
     end
-    else if (edtInputFile.Text = edtOutputFile.Text) then
+    else if (lbxInputFiles.Count > 1) and not FileExists(lbxInputFiles.Items[1]) then
+    begin
+      ShowMessage('The input file could not be found:' + LineEnding
+      + lbxInputFiles.Items[1] + LineEnding + 'Please select a valid input file!');
+    end
+    else if (Pos(lbxOutputFiles.Items[0], lbxInputFiles.Items.Text) > 0)
+      or ((lbxOutputFiles.Count > 1) and (Pos(lbxOutputFiles.Items[1], lbxInputFiles.Items.Text) > 0)) then
     begin
       ShowMessage('The input and output files can''t be the same file!');
     end
@@ -260,8 +288,22 @@ begin
       t := tabTitles.TabIndex;
       Transcodes[t].StdOutput.Clear;
 
-      Transcodes[t].SrcFile := edtInputFile.Text;
-      Transcodes[t].DstFile := edtOutputFile.Text;
+      { Configure the input and output files.
+        There acn be upto 2 input and upto 2 output files. }
+      Transcodes[t].SrcFile[0] := lbxInputFiles.Items[0];
+      if (lbxInputFiles.Count > 1) then
+      begin
+        Transcodes[t].SrcFile[1] := lbxInputFiles.Items[1];
+      end
+      else Transcodes[t].SrcFile[1] := '';
+
+      Transcodes[t].DstFile[0] := lbxOutputFiles.Items[0];
+      if (lbxOutputFiles.Count > 1) then
+      begin
+        Transcodes[t].DstFile[1] := lbxOutputFiles.Items[1];
+      end
+      else Transcodes[t].DstFile[1] := '';
+
 
       btnProcessFile.Caption := 'Abort Processing';
       btnProcessFile.Tag := 1;
@@ -302,7 +344,10 @@ begin
     if dlgOpen.InitialDir = '' then
        dlgOpen.InitialDir := dlgSave.InitialDir;
 
-    edtInputFile.Text := Trim(dlgOpen.FileName);
+    if (lbxInputFiles.Count > 1) then
+       lbxInputFiles.Items[1] := Trim(dlgOpen.FileName)
+    else
+      lbxInputFiles.AddItem(Trim(dlgOpen.FileName), Nil);
   end;
 end;
 
@@ -313,7 +358,10 @@ begin
     if dlgSave.InitialDir = '' then
        dlgSave.InitialDir := dlgOpen.InitialDir;
 
-    edtOutputFile.Text := Trim(dlgSave.FileName);
+    if (lbxOutputFiles.Count > 1) then
+       lbxOutputFiles.Items[1] := Trim(dlgSave.FileName)
+    else
+      lbxOutputFiles.AddItem(Trim(dlgSave.FileName), Nil);
   end;
 end;
 
@@ -361,9 +409,92 @@ begin
   AddTranscode();
 end;
 
+procedure TfrmMain.lbxInputFilesDblClick(Sender: TObject);
+var
+  Index: integer;
+begin
+  Index := lbxOutputFiles.ItemIndex;
+
+  if dlgOpen.Execute then
+  begin
+    if dlgOpen.InitialDir = '' then
+       dlgOpen.InitialDir := dlgSave.InitialDir;
+
+    if (Index < 0) then
+      lbxInputFiles.AddItem(Trim(dlgOpen.FileName), Nil)
+    else
+      lbxInputFiles.Items[Index] := Trim(dlgOpen.FileName);
+  end;
+end;
+
+procedure TfrmMain.lbxOutputFilesDblClick(Sender: TObject);
+var
+  Index: integer;
+begin
+  Index := lbxOutputFiles.ItemIndex;
+
+  if dlgSave.Execute then
+  begin
+    if dlgSave.InitialDir = '' then
+       dlgSave.InitialDir := dlgOpen.InitialDir;
+
+    if (Index < 0) then
+      lbxOutputFiles.AddItem(Trim(dlgSave.FileName), Nil)
+    else
+      lbxOutputFiles.Items[Index] := Trim(dlgSave.FileName);
+  end;
+end;
+
+procedure TfrmMain.mnuAddFileClick(Sender: TObject);
+begin
+  if Sender is TComponent then
+  begin
+    if (TComponent(Sender).Tag = 0) then
+      btnInputFileClick(nil)
+    else
+      btnOutputFileClick(nil);
+  end;
+end;
+
 procedure TfrmMain.mnuAddTabClick(Sender: TObject);
 begin
   AddTranscode();
+end;
+
+procedure TfrmMain.mnuRemoveFileClick(Sender: TObject);
+var
+  List: TListBox;
+begin
+  if (TComponent(Sender).Tag = 0) then
+    List := lbxInputFiles
+  else
+    List := lbxOutputFiles;
+
+  if (List.Count > 0) then
+  begin
+    if (List.ItemIndex >= 0) then
+      List.Items.Delete(List.ItemIndex)
+    else
+      List.Items.Delete(List.Count-1);
+  end
+end;
+
+procedure TfrmMain.mnuSwitchFilesClick(Sender: TObject);
+var
+  List: TListBox;
+  Filename: string;
+begin
+  if (TComponent(Sender).Tag = 0) then
+    List := lbxInputFiles
+  else
+    List := lbxOutputFiles;
+
+  if (List.Count > 1) then
+  begin
+    Filename := List.Items.Strings[0];
+    List.Items.Strings[0] := List.Items.Strings[1];
+    List.Items.Strings[1] := Filename;
+  end
 end;
 
 procedure TfrmMain.tabSettingsChange(Sender: TObject);
@@ -516,8 +647,10 @@ begin
   Transcodes[t].Frames := 0;
   Transcodes[t].Fps := 0;
   Transcodes[t].StdOutput := TStringList.Create;
-  Transcodes[t].SrcFile:='';
-  Transcodes[t].DstFile:='';
+  Transcodes[t].SrcFile[0]:='';
+  Transcodes[t].SrcFile[1]:='';
+  Transcodes[t].DstFile[0]:='';
+  Transcodes[t].DstFile[1]:='';
   Transcodes[t].Running := False;
 
   Result := 0;
