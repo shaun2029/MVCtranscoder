@@ -1,11 +1,11 @@
 object frmMain: TfrmMain
   Left = 305
-  Height = 594
+  Height = 613
   Top = 219
   Width = 944
   BorderStyle = bsSingle
   Caption = 'MVCTranscoder'
-  ClientHeight = 594
+  ClientHeight = 593
   ClientWidth = 944
   Icon.Data = {
     3E08010000000100010080800000010020002808010016000000280000008000
@@ -2124,6 +2124,7 @@ object frmMain: TfrmMain
     0000000000000000000000000000000000000000000000000000000000000000
     0000
   }
+  Menu = mnuMain
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -2159,7 +2160,7 @@ object frmMain: TfrmMain
       end
       object btnProcessFile: TButton
         Left = 305
-        Height = 38
+        Height = 32
         Top = 480
         Width = 123
         Caption = 'Process File'
@@ -2536,6 +2537,17 @@ object frmMain: TfrmMain
       Tag = 1
       Caption = 'Switch File Positions'
       OnClick = mnuSwitchFilesClick
+    end
+  end
+  object mnuMain: TMainMenu
+    left = 830
+    top = 160
+    object MenuItem1: TMenuItem
+      Caption = 'Help'
+      object mnuAbout: TMenuItem
+        Caption = 'About'
+        OnClick = mnuAboutClick
+      end
     end
   end
 end

@@ -6,8 +6,8 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, ExtCtrls, Process, LCLType, Menus, Spin, Buttons,
-  fileinfo, winpeimagereader, elfreader, machoreader;
+  ComCtrls, ExtCtrls, Process, LCLType, Menus, Spin, Buttons, ActnList,
+  fileinfo, winpeimagereader, elfreader, machoreader, about;
 
 ResourceString
   rsQualityContr = 'Quality controlled variable bitrate, quality in range [11,'
@@ -72,6 +72,9 @@ type
     lblQuality: TLabel;
     lbxInputFiles: TListBox;
     lbxOutputFiles: TListBox;
+    MenuItem1: TMenuItem;
+    mnuAbout: TMenuItem;
+    mnuMain: TMainMenu;
     mnuAddFile1: TMenuItem;
     mnuOutputFiles: TPopupMenu;
     mnuRemoveFile1: TMenuItem;
@@ -105,6 +108,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure lbxInputFilesDblClick(Sender: TObject);
     procedure lbxOutputFilesDblClick(Sender: TObject);
+    procedure mnuAboutClick(Sender: TObject);
     procedure mnuAddFileClick(Sender: TObject);
     procedure mnuAddTabClick(Sender: TObject);
     procedure mnuRemoveFileClick(Sender: TObject);
@@ -484,6 +488,11 @@ begin
     else
       lbxOutputFiles.Items[Index] := Trim(dlgSave.FileName);
   end;
+end;
+
+procedure TfrmMain.mnuAboutClick(Sender: TObject);
+begin
+  frmAbout.ShowModal;
 end;
 
 procedure TfrmMain.mnuAddFileClick(Sender: TObject);
