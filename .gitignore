@@ -73,3 +73,6 @@ __recovery/
 *.bak
 *.compiled
 *.bak
+lib/
+backup/
+*.lps

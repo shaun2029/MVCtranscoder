@@ -21,11 +21,11 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf64}\{#MyAppName}
 DisableProgramGroupPage=yes
-LicenseFile=C:\Users\Shaun\Documents\GitHub\MVCtranscoder\LICENSE
-InfoBeforeFile=C:\Users\Shaun\Documents\GitHub\MVCtranscoder\README.md
-OutputDir=C:\Users\Shaun\Documents\GitHub\MVCtranscoder\Installer\output
-OutputBaseFilename=MVCtranscoder Setup
-SetupIconFile=C:\Users\Shaun\Documents\GitHub\MVCtranscoder\artwork\Icon_128.ico
+LicenseFile=..\..\\MVCtranscoder\LICENSE
+InfoBeforeFile=..\..\\MVCtranscoder\README.md
+OutputDir=..\..\\MVCtranscoder\Installer\output
+OutputBaseFilename=MVCtranscoder 1.0 Setup
+SetupIconFile=..\..\\MVCtranscoder\artwork\Icon_128.ico
 Compression=lzma
 SolidCompression=yes
 
@@ -36,10 +36,12 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\Shaun\Documents\GitHub\MVCtranscoder\MVCTranscoder.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Shaun\Documents\GitHub\MVCtranscode\x64\Release\libmfxsw64.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Shaun\Documents\GitHub\MVCtranscode\x64\Release\MVCtranscode.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Shaun\Documents\GitHub\MVCtranscoder\README.md"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\\MVCtranscoder\MVCTranscoder.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\\MVCtranscode\x64\Release\libmfxsw64.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\\MVCtranscode\x64\Release\MVCtranscode.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\\MVCtranscoder\README.md"; DestDir: "{app}"; DestName: "README"; Flags: ignoreversion
+Source: "..\..\\MVCtranscode\LICENSE"; DestDir: "{app}"; DestName: "MVCtranscode_LICENCE"; Flags: ignoreversion
+Source: "..\..\\MVCtranscode\README.md"; DestDir: "{app}"; DestName: "MVCtranscode_README"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
