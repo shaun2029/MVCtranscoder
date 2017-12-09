@@ -8,6 +8,30 @@ uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   ComCtrls, ExtCtrls, Process, LCLType, Menus, Spin, Buttons;
 
+ResourceString
+  rsQualityContr = 'Quality controlled variable bitrate, quality in range [11,'
+    +'51] where 11 is the highest quality (17 to 20 recommended). This '
+    +'algorithm tries to achieve the subjective quality with minimum no. of '
+    +'bits. Bitrate and max bitrate settings are used by QVBR to limit the '
+    +'maximum output bitrate. This limits the effect of high motion scenes on '
+    +'the output file size. Bitrates are doubled for MVC encoding. '
+    +'%sNOTE: QVBR is supported from 4th generation Intel'
+    +' Core processor(codename Haswell) onward.';
+  rsConstantQuan = 'Constant quantization parameter (CQP BRC) bitrate control '
+    +'method, quality in range [11,51] where 11 is the highest quality, 19 to '
+    +'22 recommended. NOTE: CQP can produce large files with quality values of'
+    +' 18 and below. This depends on the quantity of high motion content.';
+  rsVariableBitr = 'Variable bitrate control. This method allows more bitrate '
+    +'variations to match complexity of the inputs i.e. assign higher bit rate'
+    +' to complex scenarios like scene change and low bitrate to less complex '
+    +'scenarios. It tries to achieve a smaller overall file size, but also '
+    +'gives unpredictable spikes. This method provides an overall better '
+    +'bitrate quality by allowing bitrate to fluctuate more and also by '
+    +'disable padding. Bitrates are doubled for MVC encoding.';
+  rsIfEncoderHar = 'If encoder hardware acceleration is enabled QVBR is used '
+    +'else VBR is used. QVBR is used with a quality of 17. A bitrate of 10000'
+    +'Kbps and max bitrate of 20000Kbps. Bitrates are doubled for MVC encoding.';
+
 type
   TEncSettings = (esAuto, esCQP, esVBR, esQVBR);
 
@@ -63,6 +87,7 @@ type
     seBitrate: TSpinEdit;
     seMaxBitrate: TSpinEdit;
     seQuality: TSpinEdit;
+    stxtBrcInfo: TStaticText;
     stxtFrames: TStaticText;
     stxtFps: TStaticText;
     tabSettings: TTabControl;
@@ -112,6 +137,7 @@ const
 var
   InputCodec: String;
   OutputCodec, SrcFiles, DstFiles: String;
+  Multiplier: double;
 begin
   // Set up the process; as an example a recursive directory search is used
   // because that will usually result in a lot of data.
@@ -133,11 +159,13 @@ begin
   begin
     InputCodec := 'mvc';
     OutputCodec := 'mvc';
+    Multiplier := 2.0;
   end
   else
   begin
     InputCodec := 'h264';
     OutputCodec := 'h264';
+    Multiplier := 1.0;
   end;
 
   if cbxInputHw.Checked then
@@ -161,7 +189,6 @@ begin
   OutputCodec := OutputCodec + ' -u '
     + IntToStr(tbarSpeed.Position);
 
-
   SrcFiles := ' -dots -i "' + Transcodes[Id].SrcFile[0] + '"';
   if (Transcodes[Id].SrcFile[1] <> '') then
     SrcFiles := SrcFiles + ' -i "' + Transcodes[Id].SrcFile[1] + '"';
@@ -174,7 +201,8 @@ begin
   begin
     Transcodes[Id].AProcess.Parameters.Text := ' ' + InputCodec + SrcFiles + ' ' + OutputCodec
       + DstFiles + ' -qvbr ' + IntToStr(seQuality.Value)
-      + ' -b ' + IntToStr(seBitrate.Value) + ' -MaxKbps ' + IntToStr(seMaxBitrate.Value);
+      + ' -b ' + IntToStr(Round(seBitrate.Value * Multiplier))
+      + ' -MaxKbps ' + IntToStr(Round(seMaxBitrate.Value * Multiplier));
   end
   else if (tabSettings.TabIndex = Integer(esCQP)) then
   begin
@@ -185,7 +213,9 @@ begin
   else if (tabSettings.TabIndex = Integer(esVBR)) then
   begin
     Transcodes[Id].AProcess.Parameters.Text := ' ' + InputCodec + SrcFiles + ' ' + OutputCodec
-      + DstFiles + ' -vbr -b ' + IntToStr(seBitrate.Value) + ' -MaxKbps ' + IntToStr(seMaxBitrate.Value);
+      + DstFiles + ' -vbr '
+      + ' -b ' + IntToStr(Round(seBitrate.Value * Multiplier))
+      + ' -MaxKbps ' + IntToStr(Round(seMaxBitrate.Value * Multiplier));
   end
   else
   begin
@@ -407,6 +437,7 @@ begin
   SetLength(Transcodes, 0);
   AddTranscode();
   AddTranscode();
+  stxtBrcInfo.Caption := rsIfEncoderHar;
 end;
 
 procedure TfrmMain.lbxInputFilesDblClick(Sender: TObject);
@@ -519,6 +550,8 @@ begin
       lblMaxBitrate.Enabled := false;
       seMaxBitrate.Enabled := false;
     end;
+
+    stxtBrcInfo.Caption := Format(rsQualityContr, [LineEnding])
   end
   else if (tabSettings.TabIndex = Integer(esCQP)) then
   begin
@@ -528,6 +561,8 @@ begin
     seBitrate.Enabled := false;
     lblMaxBitrate.Enabled := false;
     seMaxBitrate.Enabled := false;
+
+    stxtBrcInfo.Caption := rsConstantQuan
   end
   else if (tabSettings.TabIndex = Integer(esVBR)) then
   begin
@@ -537,6 +572,8 @@ begin
     seBitrate.Enabled := true;
     lblMaxBitrate.Enabled := true;
     seMaxBitrate.Enabled := true;
+
+    stxtBrcInfo.Caption := rsVariableBitr
   end
   else
   begin
@@ -546,6 +583,8 @@ begin
     seBitrate.Enabled := false;
     lblMaxBitrate.Enabled := false;
     seMaxBitrate.Enabled := false;
+
+    stxtBrcInfo.Caption := rsIfEncoderHar
   end
 end;
 

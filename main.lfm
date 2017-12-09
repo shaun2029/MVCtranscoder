@@ -1,38 +1,38 @@
 object frmMain: TfrmMain
   Left = 265
-  Height = 465
+  Height = 594
   Top = 167
-  Width = 1018
+  Width = 944
   BorderStyle = bsSingle
   Caption = 'MVCTranscoder'
-  ClientHeight = 465
-  ClientWidth = 1018
+  ClientHeight = 594
+  ClientWidth = 944
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   LCLVersion = '1.6.4.0'
   object tabTitles: TTabControl
     Left = 480
-    Height = 448
+    Height = 576
     Top = 8
-    Width = 529
+    Width = 457
     OnChange = tabTitlesChange
     OnChanging = tabTitlesChanging
     PopupMenu = mnuTabs
     TabOrder = 0
     object GroupBox1: TGroupBox
       Left = 7
-      Height = 408
+      Height = 536
       Top = 32
-      Width = 512
-      ClientHeight = 388
-      ClientWidth = 508
+      Width = 441
+      ClientHeight = 516
+      ClientWidth = 437
       TabOrder = 1
       object mmEncode: TMemo
         Left = 8
-        Height = 336
+        Height = 472
         Top = 0
-        Width = 492
+        Width = 420
         Lines.Strings = (
           'MVCtranscoder'
         )
@@ -41,44 +41,44 @@ object frmMain: TfrmMain
         TabOrder = 0
       end
       object btnProcessFile: TButton
-        Left = 377
+        Left = 305
         Height = 38
-        Top = 344
+        Top = 480
         Width = 123
         Caption = 'Process File'
         OnClick = btnProcessFileClick
         TabOrder = 1
       end
       object stxtFrames: TStaticText
-        Left = 59
+        Left = 56
         Height = 20
-        Top = 344
+        Top = 480
         Width = 101
         BorderStyle = sbsSingle
         Caption = '0'
         TabOrder = 2
       end
       object Label1: TLabel
-        Left = 11
+        Left = 8
         Height = 15
-        Top = 344
+        Top = 480
         Width = 41
         Caption = 'Frames:'
         ParentColor = False
       end
       object Label2: TLabel
-        Left = 185
+        Left = 182
         Height = 15
-        Top = 344
+        Top = 480
         Width = 21
         Caption = 'Fps:'
         ParentColor = False
       end
       object stxtFps: TStaticText
-        Left = 216
+        Left = 213
         Height = 20
-        Top = 344
-        Width = 101
+        Top = 480
+        Width = 56
         BorderStyle = sbsSingle
         Caption = '0'
         TabOrder = 3
@@ -127,12 +127,12 @@ object frmMain: TfrmMain
   end
   object GroupBox2: TGroupBox
     Left = 8
-    Height = 144
+    Height = 272
     Top = 152
-    Width = 464
+    Width = 461
     Caption = 'Birtate Control Method'
-    ClientHeight = 124
-    ClientWidth = 460
+    ClientHeight = 252
+    ClientWidth = 457
     TabOrder = 1
     object tabSettings: TTabControl
       Left = 6
@@ -167,7 +167,7 @@ object frmMain: TfrmMain
         MaxValue = 40000
         MinValue = 1000
         TabOrder = 1
-        Value = 20000
+        Value = 10000
       end
       object seMaxBitrate: TSpinEdit
         Left = 320
@@ -179,7 +179,7 @@ object frmMain: TfrmMain
         MaxValue = 40000
         MinValue = 1000
         TabOrder = 2
-        Value = 40000
+        Value = 20000
       end
       object lblMaxBitrate: TLabel
         Left = 248
@@ -208,15 +208,23 @@ object frmMain: TfrmMain
         MaxValue = 51
         MinValue = 11
         TabOrder = 3
-        Value = 18
+        Value = 20
       end
+    end
+    object stxtBrcInfo: TStaticText
+      Left = 8
+      Height = 112
+      Top = 128
+      Width = 441
+      BorderStyle = sbsSingle
+      TabOrder = 1
     end
   end
   object rgrpCodec: TRadioGroup
-    Left = 16
+    Left = 8
     Height = 64
     Top = 80
-    Width = 224
+    Width = 229
     AutoFill = True
     Caption = 'Codec'
     ChildSizing.LeftRightSpacing = 6
@@ -227,7 +235,7 @@ object frmMain: TfrmMain
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 2
     ClientHeight = 44
-    ClientWidth = 220
+    ClientWidth = 225
     Columns = 2
     ItemIndex = 0
     Items.Strings = (
@@ -239,11 +247,11 @@ object frmMain: TfrmMain
   object GroupBox3: TGroupBox
     Left = 5
     Height = 152
-    Top = 304
-    Width = 467
+    Top = 432
+    Width = 464
     Caption = 'Files'
     ClientHeight = 132
-    ClientWidth = 463
+    ClientWidth = 460
     TabOrder = 3
     object Label3: TLabel
       Left = 8
@@ -302,7 +310,7 @@ object frmMain: TfrmMain
     end
   end
   object GroupBox4: TGroupBox
-    Left = 11
+    Left = 8
     Height = 57
     Top = 8
     Width = 461
@@ -331,13 +339,13 @@ object frmMain: TfrmMain
     end
   end
   object GroupBox5: TGroupBox
-    Left = 248
+    Left = 250
     Height = 64
     Top = 80
-    Width = 222
+    Width = 219
     Caption = 'Quality \ Speed'
     ClientHeight = 44
-    ClientWidth = 218
+    ClientWidth = 215
     TabOrder = 5
     object tbarSpeed: TTrackBar
       Left = 16
