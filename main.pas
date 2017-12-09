@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, ExtCtrls, Process, LCLType, Menus, Spin, Buttons;
+  ComCtrls, ExtCtrls, Process, LCLType, Menus, Spin, Buttons,
+  fileinfo, winpeimagereader, elfreader, machoreader;
 
 ResourceString
   rsQualityContr = 'Quality controlled variable bitrate, quality in range [11,'
@@ -433,7 +434,16 @@ begin
 end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
+var
+  FileVerInfo: TFileVersionInfo;
 begin
+  FileVerInfo:=TFileVersionInfo.Create(nil);
+  try
+    FileVerInfo.ReadFileInfo;
+    Self.Caption := 'MVCtranscode ' + FileVerInfo.VersionStrings.Values['ProductVersion'];
+  finally
+  end;
+
   SetLength(Transcodes, 0);
   AddTranscode();
   AddTranscode();
