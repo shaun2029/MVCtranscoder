@@ -7,3 +7,5 @@ Software only decoding/encoding options are offered for systems without Intel Qu
         This application works best with 4th generation Intel Core processor(codename Haswell) onward.
         Although not guaranteed, default settings are aimed at bluray compliance.
         These defaults are also geared towards high quality at a reasonable size.
+
+![screenshot1](https://user-images.githubusercontent.com/1158312/33799904-ecf2f0be-dd2c-11e7-9f95-d81841f482aa.png)
