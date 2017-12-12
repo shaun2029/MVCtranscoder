@@ -1,12 +1,12 @@
 object frmAbout: TfrmAbout
   Left = 420
-  Height = 392
+  Height = 409
   Top = 246
   Width = 700
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'About'
-  ClientHeight = 392
+  ClientHeight = 409
   ClientWidth = 700
   Position = poMainFormCenter
   LCLVersion = '1.6.4.0'
@@ -751,15 +751,15 @@ object frmAbout: TfrmAbout
   end
   object GroupBox1: TGroupBox
     Left = 8
-    Height = 136
+    Height = 120
     Top = 232
     Width = 338
-    ClientHeight = 116
+    ClientHeight = 100
     ClientWidth = 334
     TabOrder = 0
     object StaticText1: TStaticText
       Left = 0
-      Height = 116
+      Height = 100
       Top = 0
       Width = 334
       Align = alClient
@@ -772,9 +772,9 @@ object frmAbout: TfrmAbout
     end
   end
   object Label1: TLabel
-    Left = 17
+    Left = 16
     Height = 16
-    Top = 344
+    Top = 352
     Width = 318
     Caption = 'https://github.com/shaun2029/MVCtranscoder/releases'
     Font.CharSet = ANSI_CHARSET
@@ -790,11 +790,11 @@ object frmAbout: TfrmAbout
   end
   object StaticText2: TStaticText
     Left = 352
-    Height = 357
+    Height = 392
     Top = 8
     Width = 336
     BorderStyle = sbsSingle
-    Caption = 'MVCtranscoder can be used to transcode 3D/2D h264 streams with the aim of reducing the bitrate.'#13#10#13#10#13#10'By default Intel Quick Sync hardware accelerated encoding is used.'#13#10'Software only decoding/encoding options are offered for systems without Intel Quicksync support.'#13#10#13#10'NOTE:   This application works best with 4th generation Intel Core processor(codename Haswell) onward.'#13#10#13#10'Although not guaranteed, default settings are aimed at bluray compliance.'#13#10#13#10'These defaults are also geared towards high quality at a reasonable size.'#13#10#13#10'This software uses MVCtranscode and Intel Media SDK to transcode video. '
+    Caption = 'MVCtranscode can be used to combine two elementry video streams to create a 3D MVC output.'#13#10#13#10'MVCtranscode can also transcode 3D/2D h264 streams with the aim of reducing the bitrate.'#13#10#13#10'By default Intel Quick Sync hardware accelerated encoding is used. Software only decoding/encoding options are offered for systems without Intel Quicksync support.'#13#10#13#10'NOTE:   When combining two streams to generate a 3D MVC output, the frame sizes, frame rates and codecs of the two input streams must match.'#13#10#13#10'This application works best with 4th generation Intel Core processor(codename Haswell) onward.'#13#10#13#10'Although not guaranteed, default settings are aimed at bluray compliance.'#13#10#13#10'These defaults are also geared towards high quality at a reasonable size.'#13#10#13#10'This software uses MVCtranscode and Intel Media SDK to transcode video. '
     TabOrder = 1
   end
 end

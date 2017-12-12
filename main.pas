@@ -87,7 +87,8 @@ type
     Panel1: TPanel;
     mnuTabs: TPopupMenu;
     mnuInputFiles: TPopupMenu;
-    rgrpCodec: TRadioGroup;
+    rgrpOutputCodec: TRadioGroup;
+    rgrpInputCodec: TRadioGroup;
     seBitrate: TSpinEdit;
     seMaxBitrate: TSpinEdit;
     seQuality: TSpinEdit;
@@ -160,16 +161,36 @@ begin
   // shell command. Therefore cmd.exe and the extra parameters are needed.
   Transcodes[Id].AProcess.Executable := 'MVCtranscode.exe';
 
-  if rgrpCodec.ItemIndex = 0 then
+  if rgrpInputCodec.ItemIndex = 0 then
   begin
     InputCodec := 'mvc';
+  end
+  else if rgrpInputCodec.ItemIndex = 1 then
+  begin
+    InputCodec := 'h264';
+  end
+  else if rgrpInputCodec.ItemIndex = 2 then
+  begin
+    InputCodec := 'mpeg2';
+  end
+  else if rgrpInputCodec.ItemIndex = 2 then
+  begin
+    InputCodec := 'vc1';
+  end;
+
+  if rgrpOutputCodec.ItemIndex = 0 then
+  begin
     OutputCodec := 'mvc';
     Multiplier := 2.0;
   end
+  else if rgrpInputCodec.ItemIndex = 1 then
+  begin
+    OutputCodec := 'h264';
+    Multiplier := 1.0;
+  end
   else
   begin
-    InputCodec := 'h264';
-    OutputCodec := 'h264';
+    OutputCodec := 'mpeg2';
     Multiplier := 1.0;
   end;
 
@@ -379,8 +400,8 @@ begin
     if dlgOpen.InitialDir = '' then
        dlgOpen.InitialDir := dlgSave.InitialDir;
 
-    if (lbxInputFiles.Count > 0) then
-       lbxInputFiles.Items[0] := Trim(dlgOpen.FileName)
+    if (lbxInputFiles.Count > 1) then
+       lbxInputFiles.Items[1] := Trim(dlgOpen.FileName)
     else
       lbxInputFiles.AddItem(Trim(dlgOpen.FileName), Nil);
   end;

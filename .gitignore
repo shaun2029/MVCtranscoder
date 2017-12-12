@@ -76,3 +76,8 @@ __recovery/
 lib/
 backup/
 *.lps
+*.zip
+*.zip
+Installer/portable/
+Installer/portable_x86/
+Installer/portable/MVCtranscoder/LICENCE
