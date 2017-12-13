@@ -21,7 +21,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
-      <BuildNr Value="10"/>
+      <BuildNr Value="12"/>
       <Language Value="0809"/>
       <StringTable Comments="https://github.com/shaun2029/MVCtranscoder" CompanyName="Immutablefix" FileDescription="Transcoder for MVC H264 files" InternalName="MVCtranscode" LegalCopyright="Shaun Simpson" OriginalFilename="MVCtranscode" ProductName="MVCtranscode" ProductVersion="1.0"/>
     </VersionInfo>

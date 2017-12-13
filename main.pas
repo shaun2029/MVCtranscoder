@@ -57,16 +57,21 @@ type
     cbxOutputHw: TCheckBox;
     dlgOpen: TOpenDialog;
     dlgSave: TSaveDialog;
+    edtDecoderCmd: TEdit;
+    edtEncoderCMD: TEdit;
     GroupBox1: TGroupBox;
     GroupBox2: TGroupBox;
     GroupBox3: TGroupBox;
     GroupBox4: TGroupBox;
     GroupBox5: TGroupBox;
+    GroupBox6: TGroupBox;
     Image1: TImage;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
     lblBitrate: TLabel;
     lblMaxBitrate: TLabel;
     lblQuality: TLabel;
@@ -213,7 +218,13 @@ begin
   end;
 
   OutputCodec := OutputCodec + ' -u '
-    + IntToStr(tbarSpeed.Position);
+    + IntToStr(tbarSpeed.Position) + ' ';
+
+  if Length(Trim(edtDecoderCMD.Text)) > 0 then
+     InputCodec := InputCodec + ' ' + Trim(edtDecoderCMD.Text) + ' ';
+
+  if Length(Trim(edtEncoderCMD.Text)) > 0 then
+    OutputCodec := OutputCodec + ' ' + Trim(edtEncoderCMD.Text) + ' ';
 
   SrcFiles := ' -dots -i "' + Transcodes[Id].SrcFile[0] + '"';
   if (Transcodes[Id].SrcFile[1] <> '') then

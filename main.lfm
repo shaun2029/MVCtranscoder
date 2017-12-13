@@ -2245,16 +2245,16 @@ object frmMain: TfrmMain
   end
   object GroupBox2: TGroupBox
     Left = 8
-    Height = 272
+    Height = 240
     Top = 152
     Width = 461
     Caption = 'Birtate Control Method'
-    ClientHeight = 252
+    ClientHeight = 220
     ClientWidth = 457
     TabOrder = 4
     object tabSettings: TTabControl
       Left = 6
-      Height = 112
+      Height = 80
       Top = 8
       Width = 448
       OnChange = tabSettingsChange
@@ -2267,18 +2267,18 @@ object frmMain: TfrmMain
       )
       TabOrder = 0
       object lblBitrate: TLabel
-        Left = 40
+        Left = 160
         Height = 15
-        Top = 80
+        Top = 40
         Width = 34
         Caption = 'Bitrate'
         Enabled = False
         ParentColor = False
       end
       object seBitrate: TSpinEdit
-        Left = 96
+        Left = 216
         Height = 23
-        Top = 80
+        Top = 40
         Width = 66
         Enabled = False
         Increment = 1000
@@ -2288,9 +2288,9 @@ object frmMain: TfrmMain
         Value = 10000
       end
       object seMaxBitrate: TSpinEdit
-        Left = 320
+        Left = 368
         Height = 23
-        Top = 80
+        Top = 40
         Width = 66
         Enabled = False
         Increment = 1000
@@ -2300,16 +2300,16 @@ object frmMain: TfrmMain
         Value = 20000
       end
       object lblMaxBitrate: TLabel
-        Left = 248
+        Left = 296
         Height = 15
-        Top = 80
+        Top = 40
         Width = 59
         Caption = 'Max Bitrate'
         Enabled = False
         ParentColor = False
       end
       object lblQuality: TLabel
-        Left = 40
+        Left = 16
         Height = 15
         Top = 40
         Width = 38
@@ -2318,7 +2318,7 @@ object frmMain: TfrmMain
         ParentColor = False
       end
       object seQuality: TSpinEdit
-        Left = 96
+        Left = 72
         Height = 23
         Top = 40
         Width = 66
@@ -2330,10 +2330,10 @@ object frmMain: TfrmMain
       end
     end
     object stxtBrcInfo: TStaticText
-      Left = 8
+      Left = 6
       Height = 112
-      Top = 128
-      Width = 441
+      Top = 96
+      Width = 448
       BorderStyle = sbsSingle
       Color = clDefault
       ParentColor = False
@@ -2367,15 +2367,15 @@ object frmMain: TfrmMain
   end
   object GroupBox3: TGroupBox
     Left = 5
-    Height = 152
-    Top = 432
+    Height = 112
+    Top = 400
     Width = 464
     Caption = 'Files'
-    ClientHeight = 132
+    ClientHeight = 92
     ClientWidth = 460
     TabOrder = 5
     object Label3: TLabel
-      Left = 8
+      Left = 9
       Height = 15
       Top = 8
       Width = 28
@@ -2392,17 +2392,17 @@ object frmMain: TfrmMain
       TabOrder = 1
     end
     object Label4: TLabel
-      Left = 8
+      Left = 9
       Height = 15
-      Top = 72
+      Top = 48
       Width = 38
       Caption = 'Output'
       ParentColor = False
     end
     object btnOutputFile: TBitBtn
-      Left = 433
+      Left = 432
       Height = 23
-      Top = 72
+      Top = 48
       Width = 24
       Caption = '+'
       OnClick = btnOutputFileClick
@@ -2410,7 +2410,7 @@ object frmMain: TfrmMain
     end
     object lbxInputFiles: TListBox
       Left = 57
-      Height = 48
+      Height = 32
       Top = 8
       Width = 368
       ItemHeight = 0
@@ -2421,9 +2421,9 @@ object frmMain: TfrmMain
     object lbxOutputFiles: TListBox
       Tag = 1
       Left = 57
-      Height = 48
-      Top = 72
-      Width = 369
+      Height = 32
+      Top = 48
+      Width = 368
       ItemHeight = 0
       OnDblClick = lbxOutputFilesDblClick
       PopupMenu = mnuOutputFiles
@@ -2505,6 +2505,46 @@ object frmMain: TfrmMain
       'VC1'
     )
     TabOrder = 2
+  end
+  object GroupBox6: TGroupBox
+    Left = 8
+    Height = 64
+    Top = 520
+    Width = 461
+    Caption = 'Custom Commands'
+    ClientHeight = 44
+    ClientWidth = 457
+    TabOrder = 7
+    object edtDecoderCmd: TEdit
+      Left = 72
+      Height = 23
+      Top = 12
+      Width = 120
+      TabOrder = 0
+    end
+    object edtEncoderCMD: TEdit
+      Left = 264
+      Height = 23
+      Top = 12
+      Width = 184
+      TabOrder = 1
+    end
+    object Label5: TLabel
+      Left = 205
+      Height = 15
+      Top = 12
+      Width = 43
+      Caption = 'Encoder'
+      ParentColor = False
+    end
+    object Label6: TLabel
+      Left = 16
+      Height = 15
+      Top = 12
+      Width = 44
+      Caption = 'Decoder'
+      ParentColor = False
+    end
   end
   object dlgOpen: TOpenDialog
     Title = 'Open video file'
