@@ -2367,11 +2367,11 @@ object frmMain: TfrmMain
   end
   object GroupBox3: TGroupBox
     Left = 5
-    Height = 112
-    Top = 400
+    Height = 117
+    Top = 398
     Width = 464
     Caption = 'Files'
-    ClientHeight = 92
+    ClientHeight = 97
     ClientWidth = 460
     TabOrder = 5
     object Label3: TLabel
@@ -2383,9 +2383,9 @@ object frmMain: TfrmMain
       ParentColor = False
     end
     object btnInputFile: TBitBtn
-      Left = 433
-      Height = 23
-      Top = 8
+      Left = 432
+      Height = 19
+      Top = 0
       Width = 24
       Caption = '+'
       OnClick = btnInputFileClick
@@ -2401,7 +2401,7 @@ object frmMain: TfrmMain
     end
     object btnOutputFile: TBitBtn
       Left = 432
-      Height = 23
+      Height = 19
       Top = 48
       Width = 24
       Caption = '+'
@@ -2410,8 +2410,8 @@ object frmMain: TfrmMain
     end
     object lbxInputFiles: TListBox
       Left = 57
-      Height = 32
-      Top = 8
+      Height = 40
+      Top = 0
       Width = 368
       ItemHeight = 0
       OnDblClick = lbxInputFilesDblClick
@@ -2421,13 +2421,32 @@ object frmMain: TfrmMain
     object lbxOutputFiles: TListBox
       Tag = 1
       Left = 57
-      Height = 32
+      Height = 40
       Top = 48
       Width = 368
       ItemHeight = 0
       OnDblClick = lbxOutputFilesDblClick
       PopupMenu = mnuOutputFiles
       TabOrder = 2
+    end
+    object btnInputFileRemove: TBitBtn
+      Left = 432
+      Height = 19
+      Top = 21
+      Width = 24
+      Caption = '-'
+      OnClick = btnInputFileRemoveClick
+      TabOrder = 4
+    end
+    object btnOutputFileRemove: TBitBtn
+      Tag = 1
+      Left = 432
+      Height = 19
+      Top = 69
+      Width = 24
+      Caption = '-'
+      OnClick = btnOutputFileRemoveClick
+      TabOrder = 5
     end
   end
   object GroupBox4: TGroupBox
@@ -2571,8 +2590,8 @@ object frmMain: TfrmMain
     end
   end
   object mnuInputFiles: TPopupMenu
-    left = 656
-    top = 224
+    left = 696
+    top = 280
     object mnuAddFile: TMenuItem
       Caption = 'Add File'
       OnClick = mnuAddFileClick

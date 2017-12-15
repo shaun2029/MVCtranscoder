@@ -51,7 +51,9 @@ type
 
   TfrmMain = class(TForm)
     btnInputFile: TBitBtn;
+    btnInputFileRemove: TBitBtn;
     btnOutputFile: TBitBtn;
+    btnOutputFileRemove: TBitBtn;
     btnProcessFile: TButton;
     cbxInputHw: TCheckBox;
     cbxOutputHw: TCheckBox;
@@ -106,7 +108,9 @@ type
     tbarSpeed: TTrackBar;
     procedure btnAddTabClick(Sender: TObject);
     procedure btnInputFileClick(Sender: TObject);
+    procedure btnInputFileRemoveClick(Sender: TObject);
     procedure btnOutputFileClick(Sender: TObject);
+    procedure btnOutputFileRemoveClick(Sender: TObject);
     procedure btnProcessFileClick(Sender: TObject);
     procedure cbxOutputHwChange(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -418,6 +422,11 @@ begin
   end;
 end;
 
+procedure TfrmMain.btnInputFileRemoveClick(Sender: TObject);
+begin
+    mnuRemoveFileClick(Sender);
+end;
+
 procedure TfrmMain.btnOutputFileClick(Sender: TObject);
 begin
   if dlgSave.Execute then
@@ -430,6 +439,11 @@ begin
     else
       lbxOutputFiles.AddItem(Trim(dlgSave.FileName), Nil);
   end;
+end;
+
+procedure TfrmMain.btnOutputFileRemoveClick(Sender: TObject);
+begin
+  mnuRemoveFileClick(Sender);
 end;
 
 procedure TfrmMain.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -490,15 +504,17 @@ procedure TfrmMain.lbxInputFilesDblClick(Sender: TObject);
 var
   Index: integer;
 begin
-  Index := lbxOutputFiles.ItemIndex;
+  Index := lbxInputFiles.ItemIndex;
 
   if dlgOpen.Execute then
   begin
     if dlgOpen.InitialDir = '' then
        dlgOpen.InitialDir := dlgSave.InitialDir;
 
-    if (Index < 0) then
+    if (Index < 0) and (lbxInputFiles.Items.Count = 0) then
       lbxInputFiles.AddItem(Trim(dlgOpen.FileName), Nil)
+    else if (Index < 0) then
+      lbxInputFiles.Items[0] := Trim(dlgOpen.FileName)
     else
       lbxInputFiles.Items[Index] := Trim(dlgOpen.FileName);
   end;
@@ -515,8 +531,10 @@ begin
     if dlgSave.InitialDir = '' then
        dlgSave.InitialDir := dlgOpen.InitialDir;
 
-    if (Index < 0) then
+    if (Index < 0) and (lbxOutputFiles.Items.Count = 0) then
       lbxOutputFiles.AddItem(Trim(dlgSave.FileName), Nil)
+    else if (Index < 0) then
+      lbxOutputFiles.Items[0] := Trim(dlgOpen.FileName)
     else
       lbxOutputFiles.Items[Index] := Trim(dlgSave.FileName);
   end;
