@@ -28,4 +28,4 @@ Software only decoding/encoding options are offered for systems without Intel Qu
         These defaults are also geared towards high quality at a reasonable size.
 
 
-![screenshot1](https://user-images.githubusercontent.com/1158312/33799904-ecf2f0be-dd2c-11e7-9f95-d81841f482aa.png)
+![screenshot1](https://user-images.githubusercontent.com/1158312/33961955-c5e10b8c-e047-11e7-805c-8a81492b96fe.png)
