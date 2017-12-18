@@ -107,9 +107,7 @@ type
     tabTitles: TTabControl;
     tmrUpdate: TTimer;
     tbarSpeed: TTrackBar;
-    procedure btnInputFileClick(Sender: TObject);
     procedure btnInputFileRemoveClick(Sender: TObject);
-    procedure btnOutputFileClick(Sender: TObject);
     procedure btnOutputFileRemoveClick(Sender: TObject);
     procedure btnProcessFileClick(Sender: TObject);
     procedure cbxOutputHwChange(Sender: TObject);
@@ -132,6 +130,7 @@ type
     Transcodes: array of TTranscode;
     OptsSoftware, OptsHardware, OptsQVBR: boolean;
 
+    procedure AddListBoxFile(Sender: TObject; ListBox: TListBox; FileDialog: TFileDialog);
     function AddTranscode: integer;
     procedure EncodeFile(Id: integer);
     procedure GetOpts(out Software, Hardware, QVBR: boolean);
@@ -512,37 +511,9 @@ begin
   end;
 end;
 
-procedure TfrmMain.btnInputFileClick(Sender: TObject);
-begin
-  if dlgOpen.Execute then
-  begin
-    if dlgOpen.InitialDir = '' then
-       dlgOpen.InitialDir := dlgSave.InitialDir;
-
-    if (lbxInputFiles.Count > 1) then
-       lbxInputFiles.Items[1] := Trim(dlgOpen.FileName)
-    else
-      lbxInputFiles.AddItem(Trim(dlgOpen.FileName), Nil);
-  end;
-end;
-
 procedure TfrmMain.btnInputFileRemoveClick(Sender: TObject);
 begin
     mnuRemoveFileClick(Sender);
-end;
-
-procedure TfrmMain.btnOutputFileClick(Sender: TObject);
-begin
-  if dlgSave.Execute then
-  begin
-    if dlgSave.InitialDir = '' then
-       dlgSave.InitialDir := dlgOpen.InitialDir;
-
-    if (lbxOutputFiles.Count > 1) then
-       lbxOutputFiles.Items[1] := Trim(dlgSave.FileName)
-    else
-      lbxOutputFiles.AddItem(Trim(dlgSave.FileName), Nil);
-  end;
 end;
 
 procedure TfrmMain.btnOutputFileRemoveClick(Sender: TObject);
@@ -612,44 +583,55 @@ begin
   GetOpts(OptsSoftware, OptsHardware, OptsQVBR);
 end;
 
-procedure TfrmMain.lbxInputFilesDblClick(Sender: TObject);
+procedure TfrmMain.AddListBoxFile(Sender: TObject; ListBox: TListBox; FileDialog: TFileDialog);
 var
-  Index: integer;
+  Index, TextWidth: integer;
 begin
-  Index := lbxInputFiles.ItemIndex;
+  if Sender is TListBox then
+     Index := ListBox.ItemIndex
+  else
+    Index := -1;
 
-  if dlgOpen.Execute then
+  if (Index >= 0) then
+    FileDialog.FileName := ListBox.Items.Strings[Index];
+
+  if FileDialog.Execute then
   begin
-    if dlgOpen.InitialDir = '' then
-       dlgOpen.InitialDir := dlgSave.InitialDir;
+    if FileDialog.InitialDir = '' then
+    begin
+      if FileDialog is TOpenDialog then
+        FileDialog.InitialDir := dlgSave.InitialDir
+      else
+        FileDialog.InitialDir := dlgOpen.InitialDir;
+    end;
 
-    if (Index < 0) and (lbxInputFiles.Items.Count = 0) then
-      lbxInputFiles.AddItem(Trim(dlgOpen.FileName), Nil)
+    if (Index < 0) and (ListBox.Items.Count < 2) then
+      ListBox.AddItem(Trim(FileDialog.FileName), Nil)
     else if (Index < 0) then
-      lbxInputFiles.Items[0] := Trim(dlgOpen.FileName)
+      ListBox.Items[1] := Trim(FileDialog.FileName)
     else
-      lbxInputFiles.Items[Index] := Trim(dlgOpen.FileName);
+      ListBox.Items[Index] := Trim(FileDialog.FileName);
+
+    ListBox.ScrollWidth := 0;
+    for index := 0 to ListBox.Items.Count - 1 do
+    begin
+      TextWidth := ListBox.Canvas.TextWidth(ListBox.Items.Strings[Index]) + 8;
+      if (ListBox.ScrollWidth < TextWidth) then
+      begin
+        ListBox.ScrollWidth := TextWidth;
+      end;
+    end;
   end;
 end;
 
-procedure TfrmMain.lbxOutputFilesDblClick(Sender: TObject);
-var
-  Index: integer;
+procedure TfrmMain.lbxInputFilesDblClick(Sender: TObject);
 begin
-  Index := lbxOutputFiles.ItemIndex;
+  AddListBoxFile(Sender, lbxInputFiles, dlgOpen);
+end;
 
-  if dlgSave.Execute then
-  begin
-    if dlgSave.InitialDir = '' then
-       dlgSave.InitialDir := dlgOpen.InitialDir;
-
-    if (Index < 0) and (lbxOutputFiles.Items.Count = 0) then
-      lbxOutputFiles.AddItem(Trim(dlgSave.FileName), Nil)
-    else if (Index < 0) then
-      lbxOutputFiles.Items[0] := Trim(dlgOpen.FileName)
-    else
-      lbxOutputFiles.Items[Index] := Trim(dlgSave.FileName);
-  end;
+procedure TfrmMain.lbxOutputFilesDblClick(Sender: TObject);
+begin
+  AddListBoxFile(Sender, lbxOutputFiles, dlgSave);
 end;
 
 procedure TfrmMain.mnuAboutClick(Sender: TObject);
@@ -662,9 +644,9 @@ begin
   if Sender is TComponent then
   begin
     if (TComponent(Sender).Tag = 0) then
-      btnInputFileClick(nil)
+      lbxInputFilesDblClick(nil)
     else
-      btnOutputFileClick(nil);
+      lbxOutputFilesDblClick(nil);
   end;
 end;
 
@@ -675,19 +657,30 @@ end;
 
 procedure TfrmMain.mnuRemoveFileClick(Sender: TObject);
 var
-  List: TListBox;
+  ListBox: TListBox;
+  Index, TextWidth: Integer;
 begin
   if (TComponent(Sender).Tag = 0) then
-    List := lbxInputFiles
+    ListBox := lbxInputFiles
   else
-    List := lbxOutputFiles;
+    ListBox := lbxOutputFiles;
 
-  if (List.Count > 0) then
+  if (ListBox.Count > 0) then
   begin
-    if (List.ItemIndex >= 0) then
-      List.Items.Delete(List.ItemIndex)
+    if (ListBox.ItemIndex >= 0) then
+      ListBox.Items.Delete(ListBox.ItemIndex)
     else
-      List.Items.Delete(List.Count-1);
+      ListBox.Items.Delete(ListBox.Count-1);
+
+    ListBox.ScrollWidth := 0;
+    for index := 0 to ListBox.Items.Count - 1 do
+    begin
+      TextWidth := ListBox.Canvas.TextWidth(ListBox.Items.Strings[Index]) + 8;
+      if (ListBox.ScrollWidth < TextWidth) then
+      begin
+        ListBox.ScrollWidth := TextWidth;
+      end;
+    end;
   end
 end;
 
