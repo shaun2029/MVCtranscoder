@@ -2125,6 +2125,7 @@ object frmMain: TfrmMain
     0000
   }
   Menu = mnuMain
+  OnActivate = FormActivate
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate

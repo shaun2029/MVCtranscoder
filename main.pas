@@ -34,6 +34,7 @@ ResourceString
     +'Kbps and max bitrate of 20000Kbps. Bitrates are doubled for MVC encoding.';
 
 type
+  // Note: SDK for MVC encoding ony supports CQP, CBR, VBR and QVB.
   TEncSettings = (esAuto, esCQP, esVBR, esQVBR);
 
   TTranscode = record
@@ -106,13 +107,13 @@ type
     tabTitles: TTabControl;
     tmrUpdate: TTimer;
     tbarSpeed: TTrackBar;
-    procedure btnAddTabClick(Sender: TObject);
     procedure btnInputFileClick(Sender: TObject);
     procedure btnInputFileRemoveClick(Sender: TObject);
     procedure btnOutputFileClick(Sender: TObject);
     procedure btnOutputFileRemoveClick(Sender: TObject);
     procedure btnProcessFileClick(Sender: TObject);
     procedure cbxOutputHwChange(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
@@ -129,8 +130,11 @@ type
     procedure tmrUpdateTimer(Sender: TObject);
   private
     Transcodes: array of TTranscode;
+    OptsSoftware, OptsHardware, OptsQVBR: boolean;
+
     function AddTranscode: integer;
     procedure EncodeFile(Id: integer);
+    procedure GetOpts(out Software, Hardware, QVBR: boolean);
     procedure UpdateProgress(Id: integer);
     { private declarations }
   public
@@ -145,6 +149,64 @@ implementation
 {$R *.lfm}
 
 { TfrmMain }
+
+procedure TfrmMain.GetOpts(out Software, Hardware, QVBR: boolean);
+const
+  BUF_SIZE = 2048; // Buffer size for reading the output in chunks
+var
+  AProcess : TProcess;
+  OutputString: String;
+  Output: TStringList;
+  BytesRead: integer;
+  Buffer : array[1..BUF_SIZE] of byte;
+begin
+  QVBR := False;
+  Software := False;
+  Hardware := False;
+
+  Output := TStringList.Create;
+  AProcess := TProcess.Create(nil);
+
+  try
+    AProcess.Executable := 'MVCtranscode.exe';
+    AProcess.Parameters.Text := '-caps';
+    AProcess.Options := [poUsePipes, poNoConsole, poWaitOnExit];
+    AProcess.Execute;
+
+    while AProcess.Output.NumBytesAvailable > 0 do
+    begin
+      BytesRead := AProcess.Output.Read(Buffer, BUF_SIZE);
+      SetString(OutputString, PAnsiChar(@Buffer[1]), BytesRead);
+      Output.Text := Output.Text + LowerCase(OutputString);
+    end;
+
+    if (Output.IndexOf('software: yes') >= 0) then
+       Software := True
+    else
+       Software := False;
+
+    if (Output.IndexOf('hardware: yes') >= 0) then
+       Hardware := True
+    else
+       Hardware := False;
+
+    if (Output.IndexOf('qvbr: yes') >= 0) then
+       QVBR := True
+    else
+       QVBR := False;
+  except
+    on E: Exception do
+    begin
+       Application.MessageBox(PChar('Failed to execute "MVCtranscode.exe" please re-install MVCtranscoder.'
+         + LineEnding + 'Error: ' + E.Message), 'Fatal Error', MB_ICONERROR);
+       Application.Terminate;
+    end;
+  end;
+
+  FreeAndNil(AProcess);
+  FreeAndNil(Output);
+end;
+
 
 procedure TfrmMain.EncodeFile(Id: integer);
 const
@@ -240,10 +302,10 @@ begin
 
   if (tabSettings.TabIndex = Integer(esQVBR)) then
   begin
-    Transcodes[Id].AProcess.Parameters.Text := ' ' + InputCodec + SrcFiles + ' ' + OutputCodec
-      + DstFiles + ' -qvbr ' + IntToStr(seQuality.Value)
-      + ' -b ' + IntToStr(Round(seBitrate.Value * Multiplier))
-      + ' -MaxKbps ' + IntToStr(Round(seMaxBitrate.Value * Multiplier));
+      Transcodes[Id].AProcess.Parameters.Text := ' ' + InputCodec + SrcFiles + ' ' + OutputCodec
+        + DstFiles + ' -qvbr ' + IntToStr(seQuality.Value)
+        + ' -b ' + IntToStr(Round(seBitrate.Value * Multiplier))
+        + ' -MaxKbps ' + IntToStr(Round(seMaxBitrate.Value * Multiplier));
   end
   else if (tabSettings.TabIndex = Integer(esCQP)) then
   begin
@@ -270,7 +332,20 @@ begin
 
   // Start the process (run the dir/ls command)
   Transcodes[Id].StdOutput.Add(Transcodes[Id].AProcess.Parameters.Text);
-  Transcodes[Id].AProcess.Execute;
+
+  try
+    Transcodes[Id].AProcess.Execute;
+  except
+    on E: Exception do
+    begin
+      Transcodes[Id].StdOutput.Add('');
+      Transcodes[Id].StdOutput.Add('Failed to execute "MVCtranscode.exe" please re-install MVCtranscoder.');
+      Transcodes[Id].StdOutput.Add('Error: ' + E.Message);
+      Transcodes[Id].Running := False;
+      Transcodes[Id].StdOutput.Add('');
+    end;
+  end;
+
   Transcodes[Id].StartTime := GetTickCount64();
 end;
 
@@ -333,26 +408,31 @@ begin
 
     if (lbxInputFiles.Count = 0) then
     begin
-      ShowMessage('Please select an input file.');
+      Application.MessageBox('Please select an input file.',
+        'Input Missing', MB_ICONERROR);
     end
     else if (lbxOutputFiles.Count = 0) then
     begin
-      ShowMessage('Please select an output file.');
+      Application.MessageBox('Please select an output file.',
+        'Output Missing', MB_ICONERROR);
     end
     else if not FileExists(lbxInputFiles.Items[0]) then
     begin
-      ShowMessage('The input file could not be found:' + LineEnding
-      + lbxInputFiles.Items[0] + LineEnding + 'Please select a valid input file!');
+      Application.MessageBox(PChar('The input file could not be found:' + LineEnding
+        + lbxInputFiles.Items[0] + LineEnding + 'Please select a valid input file!'),
+        'File Error', MB_ICONERROR);
     end
     else if (lbxInputFiles.Count > 1) and not FileExists(lbxInputFiles.Items[1]) then
     begin
-      ShowMessage('The input file could not be found:' + LineEnding
-      + lbxInputFiles.Items[1] + LineEnding + 'Please select a valid input file!');
+      Application.MessageBox(PChar('The input file could not be found:' + LineEnding
+        + lbxInputFiles.Items[0] + LineEnding + 'Please select a valid input file!'),
+        'File Error', MB_ICONERROR);
     end
     else if (Pos(lbxOutputFiles.Items[0], lbxInputFiles.Items.Text) > 0)
       or ((lbxOutputFiles.Count > 1) and (Pos(lbxOutputFiles.Items[1], lbxInputFiles.Items.Text) > 0)) then
     begin
-      ShowMessage('The input and output files can''t be the same file!');
+      Application.MessageBox(PChar('The input and output files can''t be the same file!'),
+        'File Error', MB_ICONERROR);
     end
     else
     begin
@@ -389,7 +469,7 @@ procedure TfrmMain.cbxOutputHwChange(Sender: TObject);
 begin
   if cbxOutputHw.Checked then
   begin
-    if tabSettings.Tabs.Count < 4 then
+    if OptsQVBR and (tabSettings.Tabs.Count < 4) then
     begin
       tabSettings.Tabs.Add('QVBR');
     end;
@@ -403,9 +483,33 @@ begin
   end;
 end;
 
-procedure TfrmMain.btnAddTabClick(Sender: TObject);
+procedure TfrmMain.FormActivate(Sender: TObject);
 begin
+  if not OptsHardware then
+  begin
+    cbxInputHw.Checked := False;
+    cbxInputHw.Enabled := False;
 
+    cbxOutputHw.Checked := False;
+    cbxOutputHw.Enabled := False;
+
+    Application.MessageBox('NOTE: Intel QuickSync hardware acceleration is not supported by the installed CPU or the Intel GPU drivers.'
+      + LineEnding + 'Falling back to software encoding.',
+      'Intel QuickSync Support', MB_ICONWARNING);
+
+    tbarSpeed.Position := 4;
+  end
+  else if not OptsQVBR then
+  begin
+    if tabSettings.Tabs.Count > 3 then
+    begin
+      tabSettings.Tabs.Delete(3);
+    end;
+
+    Application.MessageBox('NOTE: Intel QuickSync hardware accelerated QVBR encoding is not supported.'
+    + LineEnding + 'QVBR is supported from 4th generation Intel Core processor(codename Haswell) onward.',
+      'Intel QuickSync Support', MB_ICONWARNING);
+  end;
 end;
 
 procedure TfrmMain.btnInputFileClick(Sender: TObject);
@@ -450,11 +554,17 @@ procedure TfrmMain.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 var
   t: integer;
 begin
-  { Terminate all running processes. }
+  { Terminate all running processes and clean up. }
   for t := 0 to High(Transcodes) do
   begin
     if Transcodes[t].Running then
         Transcodes[t].AProcess.Terminate(1);
+
+    if Assigned(Transcodes[t].AProcess) then
+      FreeAndNil(Transcodes[t].AProcess);
+
+    if Assigned(Transcodes[t].StdOutput) then
+      FreeAndNil(Transcodes[t].StdOutput);
   end;
 end;
 
@@ -498,6 +608,8 @@ begin
   AddTranscode();
   AddTranscode();
   stxtBrcInfo.Caption := rsIfEncoderHar;
+
+  GetOpts(OptsSoftware, OptsHardware, OptsQVBR);
 end;
 
 procedure TfrmMain.lbxInputFilesDblClick(Sender: TObject);
