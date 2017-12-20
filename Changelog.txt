@@ -1,0 +1,7 @@
+MVCtranscode Changelog
+
+MVCtranscode 1.1 2012/12/20
+	Encoder: Added hardware acceleration capabilities test.
+	Encoder: Fix MVC encoding issues by removing B-frames by default.
+
+MVCtranscode 1.0 2012/12/17
