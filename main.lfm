@@ -1,7 +1,7 @@
 object frmMain: TfrmMain
-  Left = 583
+  Left = 307
   Height = 644
-  Top = 233
+  Top = 192
   Width = 944
   BorderStyle = bsSingle
   Caption = 'MVCTranscoder'
@@ -2129,6 +2129,7 @@ object frmMain: TfrmMain
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  Position = poDesktopCenter
   LCLVersion = '1.8.0.6'
   object tabTitles: TTabControl
     Left = 480
@@ -2631,6 +2632,10 @@ object frmMain: TfrmMain
     top = 160
     object MenuItem1: TMenuItem
       Caption = 'Help'
+      object mmuTranscodeHelp: TMenuItem
+        Caption = 'MVCtranscode Help'
+        OnClick = mmuTranscodeHelpClick
+      end
       object mnuAbout: TMenuItem
         Caption = 'About'
         OnClick = mnuAboutClick

@@ -1,0 +1,25 @@
+object frmMVCtranscode: TfrmMVCtranscode
+  Left = 403
+  Height = 635
+  Top = 233
+  Width = 826
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsSingle
+  BorderWidth = 4
+  Caption = 'MVCTranscode Help'
+  ClientHeight = 635
+  ClientWidth = 826
+  OnActivate = FormActivate
+  Position = poMainFormCenter
+  LCLVersion = '1.8.0.6'
+  object mmTranscode: TMemo
+    Left = 4
+    Height = 627
+    Top = 4
+    Width = 818
+    Align = alClient
+    ScrollBars = ssAutoBoth
+    TabOrder = 0
+    WordWrap = False
+  end
+end

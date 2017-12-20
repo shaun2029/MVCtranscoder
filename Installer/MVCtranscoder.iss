@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "MVCtranscoder"
-#define MyAppVersion "1.1"
+#define MyAppVersion "1.1.1"
 #define MyAppPublisher "Immutablefix"
 #define MyAppURL "https://github.com/shaun2029/MVCtranscoder"
 #define MyAppExeName "MVCTranscoder.exe"
@@ -24,7 +24,7 @@ DisableProgramGroupPage=yes
 LicenseFile=..\..\\MVCtranscoder\LICENSE
 InfoBeforeFile=..\..\\MVCtranscoder\README.md
 OutputDir=..\..\\MVCtranscoder\Installer\output
-OutputBaseFilename=MVCtranscoder 1.1 Setup
+OutputBaseFilename=MVCtranscoder 1.1.1 Setup
 SetupIconFile=..\..\\MVCtranscoder\artwork\Icon_128.ico
 Compression=lzma
 SolidCompression=yes

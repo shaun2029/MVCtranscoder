@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   ComCtrls, ExtCtrls, Process, LCLType, Menus, Spin, Buttons, ActnList,
-  fileinfo, winpeimagereader, elfreader, machoreader, about;
+  fileinfo, winpeimagereader, elfreader, machoreader, about, TransCodeHelp;
 
 ResourceString
   rsQualityContr = 'Quality controlled variable bitrate, quality in range [11,'
@@ -81,6 +81,7 @@ type
     lbxInputFiles: TListBox;
     lbxOutputFiles: TListBox;
     MenuItem1: TMenuItem;
+    mmuTranscodeHelp: TMenuItem;
     mnuAbout: TMenuItem;
     mnuMain: TMainMenu;
     mnuAddFile1: TMenuItem;
@@ -117,6 +118,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure lbxInputFilesDblClick(Sender: TObject);
     procedure lbxOutputFilesDblClick(Sender: TObject);
+    procedure mmuTranscodeHelpClick(Sender: TObject);
     procedure mnuAboutClick(Sender: TObject);
     procedure mnuAddFileClick(Sender: TObject);
     procedure mnuAddTabClick(Sender: TObject);
@@ -644,6 +646,15 @@ end;
 procedure TfrmMain.lbxOutputFilesDblClick(Sender: TObject);
 begin
   AddListBoxFile(Sender, lbxOutputFiles, dlgSave);
+end;
+
+procedure TfrmMain.mmuTranscodeHelpClick(Sender: TObject);
+var
+  MVCtranscode: TfrmMVCtranscode;
+begin
+  MVCtranscode := TfrmMVCtranscode.Create(self);
+  MVCtranscode.ShowModal;
+  FreeAndNil(MVCtranscode);
 end;
 
 procedure TfrmMain.mnuAboutClick(Sender: TObject);

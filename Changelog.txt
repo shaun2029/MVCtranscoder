@@ -7,6 +7,6 @@ MVCtranscoder 1.1 2017/12/20
 	GUI: Added warning when overwriting output file.
 	GUI: Test encoder hardware acceleration support on start. 
 	Encoder: Added hardware acceleration capabilities test.
-	Encoder: Fix MVC encoding issues by removing B-frames by default.
+	Encoder: Fix MVC Intel Media SDK encoding issues by removing B-frames and enabling QSV-FF Low Power Mode.
 
 MVCtranscoder 1.0 2017/12/17

@@ -22,7 +22,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="1"/>
-      <BuildNr Value="21"/>
+      <BuildNr Value="23"/>
       <Language Value="0809"/>
       <StringTable Comments="https://github.com/shaun2029/MVCtranscoder" CompanyName="Immutablefix" FileDescription="Transcoder for MVC H264 files" InternalName="MVCtranscode" LegalCopyright="Shaun Simpson" OriginalFilename="MVCtranscode" ProductName="MVCtranscode" ProductVersion="1.1"/>
     </VersionInfo>
@@ -74,7 +74,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="4">
       <Unit0>
         <Filename Value="MVCTranscoder.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -93,6 +93,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="transcodehelp.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmMVCtranscode"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TranscodeHelp"/>
+      </Unit3>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
