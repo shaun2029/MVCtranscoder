@@ -40,6 +40,7 @@ Source: "..\..\\MVCtranscoder\MVCTranscoder.exe"; DestDir: "{app}"; Flags: ignor
 Source: "..\..\\MVCtranscode\x64\Release\libmfxsw64.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\\MVCtranscode\x64\Release\MVCtranscode.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\\MVCtranscoder\README.md"; DestDir: "{app}"; DestName: "README"; Flags: ignoreversion
+Source: "..\..\\MVCtranscoder\Changelog.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\\MVCtranscoder\LICENSE"; DestDir: "{app}"; DestName: "LICENCE"; Flags: ignoreversion
 Source: "..\..\\MVCtranscode\LICENSE"; DestDir: "{app}"; DestName: "MVCtranscode_LICENCE"; Flags: ignoreversion
 Source: "..\..\\MVCtranscode\README.md"; DestDir: "{app}"; DestName: "MVCtranscode_README"; Flags: ignoreversion
