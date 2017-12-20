@@ -586,6 +586,7 @@ end;
 procedure TfrmMain.AddListBoxFile(Sender: TObject; ListBox: TListBox; FileDialog: TFileDialog);
 var
   Index, TextWidth: integer;
+  Reply: integer;
 begin
   if Sender is TListBox then
      Index := ListBox.ItemIndex
@@ -595,14 +596,25 @@ begin
   if (Index >= 0) then
     FileDialog.FileName := ListBox.Items.Strings[Index];
 
+  if FileDialog.InitialDir = '' then
+  begin
+    if FileDialog is TSaveDialog then
+      FileDialog.InitialDir := dlgOpen.InitialDir
+    else
+      FileDialog.InitialDir := dlgSave.InitialDir;
+  end;
+
   if FileDialog.Execute then
   begin
-    if FileDialog.InitialDir = '' then
+    if FileDialog is TSaveDialog then
     begin
-      if FileDialog is TOpenDialog then
-        FileDialog.InitialDir := dlgSave.InitialDir
-      else
-        FileDialog.InitialDir := dlgOpen.InitialDir;
+      if FileExists(FileDialog.FileName) then
+      begin
+        Reply := Application.MessageBox(PChar('Are you sure you want to overwrite'
+          + LineEnding + '"' + FileDialog.FileName + '"'), 'Overwrite File?', MB_ICONWARNING + MB_YESNO);
+
+        if (Reply = IDNO) then Exit;
+      end;
     end;
 
     if (Index < 0) and (ListBox.Items.Count < 2) then

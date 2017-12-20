@@ -1,7 +1,7 @@
 object frmMain: TfrmMain
-  Left = 305
+  Left = 583
   Height = 644
-  Top = 179
+  Top = 233
   Width = 944
   BorderStyle = bsSingle
   Caption = 'MVCTranscoder'
@@ -2531,7 +2531,7 @@ object frmMain: TfrmMain
     Height = 64
     Top = 552
     Width = 461
-    Caption = 'Custom Commands'
+    Caption = 'Custom Parameters'
     ClientHeight = 44
     ClientWidth = 457
     TabOrder = 7
