@@ -573,7 +573,7 @@ begin
   FileVerInfo:=TFileVersionInfo.Create(nil);
   try
     FileVerInfo.ReadFileInfo;
-    Self.Caption := 'MVCtranscode ' + FileVerInfo.VersionStrings.Values['ProductVersion'];
+    Self.Caption := 'MVCtranscode ' + FileVerInfo.VersionStrings.Values['FileVersion'];
   finally
   end;
 
