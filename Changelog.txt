@@ -1,5 +1,9 @@
 MVCtranscoder Changelog
 
+MVCtranscoder 1.1 2017/12/21
+	GUI: Display MVCtranscode backend help.
+	Encoder: Fix MVC Intel Media SDK encoding issues by removing B-frames and enabling QSV-FF Low Power Mode.
+
 MVCtranscoder 1.1 2017/12/20
 	GUI: Added support for seperate input and output codec.
 	GUI: Added custom parameter option.
