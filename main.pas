@@ -42,6 +42,8 @@ type
     StdOutput: TStringList;
     Frames : longint;
     SrcFile, DstFile: array [0..1] of String;
+    SrcFileSize: array [0..1] of int64;
+    SrcFileSizeStable: array [0..1] of integer;
     MemoText: string;
     Running: boolean;
     StartTime: qword;
@@ -462,7 +464,7 @@ begin
       Transcodes[t].StdOutput.Clear;
 
       { Configure the input and output files.
-        There acn be upto 2 input and upto 2 output files. }
+        There can be upto 2 input and upto 2 output files. }
       Transcodes[t].SrcFile[0] := lbxInputFiles.Items[0];
       if (lbxInputFiles.Count > 1) then
       begin
@@ -477,14 +479,15 @@ begin
       end
       else Transcodes[t].DstFile[1] := '';
 
-
-      btnProcessFile.Caption := 'Abort Processing';
+      mmEncode.Clear;
+      mmEncode.Lines.Add('Waiting for input file ...');
+      btnProcessFile.Caption := 'Abort Waiting';
       btnProcessFile.Tag := 1;
-      stxtFrames.Caption := '';
-      EncodeFile(t);
+      Transcodes[t].SrcFileSizeStable[0] := 0;
+      stxtFrames.Caption := 'waiting ...';
     end;
   end
-  else btnProcessFile.Tag := 2;
+  else btnProcessFile.Tag := 3;
 end;
 
 procedure TfrmMain.cbxOutputHwChange(Sender: TObject);
@@ -906,6 +909,7 @@ var
   OutputString: string;
   Ticks: qword;
   Fps: integer;
+  SrcSize: Int64;
 begin
   for t := 0 to High(Transcodes) do
   begin
@@ -913,43 +917,68 @@ begin
 
     if t = tabTitles.TabIndex then
     begin
-      if btnProcessFile.Tag = 2 then
+      if btnProcessFile.Tag = 1 then
       begin
-        Transcodes[t].AProcess.Terminate(1);
-        OutputString := 'Processing ABORTED!';
-        Transcodes[t].StdOutput.Add(OutputString);
-      end;
+        SrcSize := FileSize(Transcodes[t].SrcFile[0]);
 
-      if Transcodes[t].StdOutput.Text <> mmEncode.Lines.Text then
-         mmEncode.Text := Transcodes[t].StdOutput.Text;
-
-      if Transcodes[t].Running then
-      begin
-        if (btnProcessFile.Tag <> 1) then
+        if SrcSize = Transcodes[t].SrcFileSize[0] then
         begin
-          btnProcessFile.Caption := 'Abort Processing';
-          btnProcessFile.Tag := 1;
-        end;
+          Inc(Transcodes[t].SrcFileSizeStable[0]);
 
-        Ticks := GetTickCount64;
-        if (Ticks - Transcodes[t].StartTime > 1000) then
-          Fps := (Transcodes[t].Frames * 1000) div (Ticks - Transcodes[t].StartTime)
+          if (Transcodes[t].SrcFileSizeStable[0] > 5000 div tmrUpdate.Interval) then
+          begin
+            btnProcessFile.Caption := 'Abort Processing';
+            btnProcessFile.Tag := 2;
+            stxtFrames.Caption := '';
+            EncodeFile(t);
+          end;
+        end
         else
-          Fps := 0;
-
-        Transcodes[t].Fps := Fps;
+        begin
+          Transcodes[t].SrcFileSize[0] := SrcSize;
+          Transcodes[t].SrcFileSizeStable[0] := 0;
+        end;
       end
       else
       begin
-        if (btnProcessFile.Tag <> 0) then
+        if btnProcessFile.Tag = 3 then
         begin
-          btnProcessFile.Tag := 0;
-          btnProcessFile.Caption := 'Process File';
+          Transcodes[t].AProcess.Terminate(1);
+          OutputString := 'Processing ABORTED!';
+          Transcodes[t].StdOutput.Add(OutputString);
         end;
-      end;
 
-      stxtFrames.Caption := IntToStr(Transcodes[t].Frames);
-      stxtFps.Caption := IntToStr(Transcodes[t].Fps);
+        if Transcodes[t].StdOutput.Text <> mmEncode.Lines.Text then
+           mmEncode.Text := Transcodes[t].StdOutput.Text;
+
+        if Transcodes[t].Running then
+        begin
+          if (btnProcessFile.Tag <> 2) then
+          begin
+            btnProcessFile.Caption := 'Abort Processing';
+            btnProcessFile.Tag := 2;
+          end;
+
+          Ticks := GetTickCount64;
+          if (Ticks - Transcodes[t].StartTime > 1000) then
+            Fps := (Transcodes[t].Frames * 1000) div (Ticks - Transcodes[t].StartTime)
+          else
+            Fps := 0;
+
+          Transcodes[t].Fps := Fps;
+        end
+        else
+        begin
+          if (btnProcessFile.Tag <> 0) then
+          begin
+            btnProcessFile.Tag := 0;
+            btnProcessFile.Caption := 'Process File';
+          end;
+        end;
+
+        stxtFrames.Caption := IntToStr(Transcodes[t].Frames);
+        stxtFps.Caption := IntToStr(Transcodes[t].Fps);
+      end;
     end;
 
     if Transcodes[t].Running then

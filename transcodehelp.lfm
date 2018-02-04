@@ -1,7 +1,7 @@
 object frmMVCtranscode: TfrmMVCtranscode
-  Left = 403
+  Left = 845
   Height = 635
-  Top = 233
+  Top = 343
   Width = 826
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
