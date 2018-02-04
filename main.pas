@@ -126,7 +126,6 @@ type
     procedure mnuSwitchFilesClick(Sender: TObject);
     procedure tabSettingsChange(Sender: TObject);
     procedure tabTitlesChange(Sender: TObject);
-    procedure tabTitlesChanging(Sender: TObject; var AllowChange: Boolean);
     procedure tmrUpdateTimer(Sender: TObject);
   private
     Transcodes: array of TTranscode;
@@ -224,7 +223,7 @@ begin
 
   Transcodes[Id].AProcess := TProcess.Create(nil);
 
-  mmEncode.Clear;
+  Transcodes[Id].MemoText := '';
   Transcodes[Id].Running := True;
   Transcodes[Id].Frames := 0;
 
@@ -797,18 +796,6 @@ begin
   end;
 
   Updateprogress(t);
-end;
-
-procedure TfrmMain.tabTitlesChanging(Sender: TObject; var AllowChange: Boolean);
-var
-  t: integer;
-begin
-  t := tabTitles.TabIndex;
-
-  if (t >= 0) then
-  begin
-    Transcodes[t].MemoText := mmEncode.Text;
-  end;
 end;
 
 procedure TfrmMain.tmrUpdateTimer(Sender: TObject);
