@@ -2137,6 +2137,7 @@ object frmMain: TfrmMain
     Top = 8
     Width = 457
     OnChange = tabTitlesChange
+    OnChanging = tabTitlesChanging
     PopupMenu = mnuTabs
     TabOrder = 6
     object GroupBox1: TGroupBox

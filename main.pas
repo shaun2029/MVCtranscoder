@@ -46,6 +46,22 @@ type
     Running: boolean;
     StartTime: qword;
     Fps: integer;
+
+    // Encoder Settings
+    ValidData: boolean;
+    InputFiles: string;
+    OutputFiles: string;
+    InputCodec : integer;
+    OutputCodec : integer;
+    InputHw : boolean;
+    OutputHw : boolean;
+    Speed : integer;
+    DecoderCMD : string;
+    EncoderCMD : string;
+    TabSettings: integer;
+    Quality: integer;
+    Bitrate: integer;
+    MaxBitrate: integer;
   end;
 
   { TfrmMain }
@@ -126,6 +142,7 @@ type
     procedure mnuSwitchFilesClick(Sender: TObject);
     procedure tabSettingsChange(Sender: TObject);
     procedure tabTitlesChange(Sender: TObject);
+    procedure tabTitlesChanging(Sender: TObject; var AllowChange: Boolean);
     procedure tmrUpdateTimer(Sender: TObject);
   private
     Transcodes: array of TTranscode;
@@ -786,16 +803,62 @@ end;
 
 procedure TfrmMain.tabTitlesChange(Sender: TObject);
 var
-  t: integer;
+  Id: integer;
 begin
-  t := tabTitles.TabIndex;
+  Id := tabTitles.TabIndex;
 
   if (mmEncode.Tag >= 0) then
   begin
-    mmEncode.Text := Transcodes[t].MemoText;
+    mmEncode.Text := Transcodes[Id].MemoText;
+
+    // Update encoding settings.
+    if (Transcodes[Id].ValidData) then
+    begin
+      cbxInputHw.Checked := Transcodes[Id].InputHw;
+      cbxOutputHw.Checked := Transcodes[Id].OutputHw;
+      tbarSpeed.Position := Transcodes[Id].Speed;
+      edtDecoderCMD.Text := Transcodes[Id].DecoderCMD;
+      edtEncoderCMD.Text := Transcodes[Id].EncoderCMD;
+      tabSettings.TabIndex := Transcodes[Id].TabSettings;
+      seQuality.Value := Transcodes[Id].Quality;
+      seBitrate.Value := Transcodes[Id].Bitrate;
+      seMaxBitrate.Value := Transcodes[Id].MaxBitrate;
+
+      lbxInputFiles.Items.Text := Transcodes[Id].InputFiles;
+      lbxOutputFiles.Items.Text := Transcodes[Id].OutputFiles;
+
+      rgrpInputCodec.ItemIndex := Transcodes[Id].InputCodec;
+      rgrpOutputCodec.ItemIndex := Transcodes[Id].OutputCodec;
+    end;
   end;
 
-  Updateprogress(t);
+  Updateprogress(Id);
+end;
+
+procedure TfrmMain.tabTitlesChanging(Sender: TObject; var AllowChange: Boolean);
+var
+  Id: integer;
+begin
+  Id := tabTitles.TabIndex;
+
+  if (mmEncode.Tag >= 0) then
+  begin
+    // Record encoding settings.
+    Transcodes[Id].ValidData := True;
+    Transcodes[Id].InputFiles := lbxInputFiles.Items.Text;
+    Transcodes[Id].OutputFiles := lbxOutputFiles.Items.Text;
+    Transcodes[Id].InputCodec := rgrpInputCodec.ItemIndex;
+    Transcodes[Id].OutputCodec := rgrpOutputCodec.ItemIndex;
+    Transcodes[Id].InputHw := cbxInputHw.Checked;
+    Transcodes[Id].OutputHw := cbxOutputHw.Checked;
+    Transcodes[Id].Speed := tbarSpeed.Position;
+    Transcodes[Id].DecoderCMD := edtDecoderCMD.Text;
+    Transcodes[Id].EncoderCMD := edtEncoderCMD.Text;
+    Transcodes[Id].TabSettings := tabSettings.TabIndex;
+    Transcodes[Id].Quality := seQuality.Value;
+    Transcodes[Id].Bitrate := seBitrate.Value;
+    Transcodes[Id].MaxBitrate := seMaxBitrate.Value;
+  end;
 end;
 
 procedure TfrmMain.tmrUpdateTimer(Sender: TObject);
@@ -875,6 +938,7 @@ begin
   Transcodes[t].DstFile[0]:='';
   Transcodes[t].DstFile[1]:='';
   Transcodes[t].Running := False;
+  Transcodes[t].ValidData := false;
 
   Result := 0;
 end;
