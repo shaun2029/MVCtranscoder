@@ -71,6 +71,7 @@ type
     btnInputFileRemove: TBitBtn;
     btnOutputFile: TBitBtn;
     btnOutputFileRemove: TBitBtn;
+    btnOutputFileDefaults: TBitBtn;
     btnProcessFile: TButton;
     cbxInputHw: TCheckBox;
     cbxOutputHw: TCheckBox;
@@ -97,6 +98,8 @@ type
     lbxInputFiles: TListBox;
     lbxOutputFiles: TListBox;
     MenuItem1: TMenuItem;
+    mnuOutputFileDefaults: TMenuItem;
+    mnuSetDefaultOutputs: TMenuItem;
     mmuTranscodeHelp: TMenuItem;
     mnuAbout: TMenuItem;
     mnuMain: TMainMenu;
@@ -138,7 +141,9 @@ type
     procedure mnuAboutClick(Sender: TObject);
     procedure mnuAddFileClick(Sender: TObject);
     procedure mnuAddTabClick(Sender: TObject);
+    procedure mnuOutputFileDefaultsClick(Sender: TObject);
     procedure mnuRemoveFileClick(Sender: TObject);
+    procedure mnuSetDefaultOutputsClick(Sender: TObject);
     procedure mnuSwitchFilesClick(Sender: TObject);
     procedure tabSettingsChange(Sender: TObject);
     procedure tabTitlesChange(Sender: TObject);
@@ -694,6 +699,35 @@ begin
   AddTranscode();
 end;
 
+procedure TfrmMain.mnuOutputFileDefaultsClick(Sender: TObject);
+var
+   Path: string;
+begin
+  if (lbxInputFiles.Count > 0) then
+  begin
+    Path := ExtractFilePath(lbxInputFiles.Items[0]);
+    lbxOutputFiles.Clear;
+
+    if rgrpOutputCodec.ItemIndex = 0 then
+    begin
+      lbxOutputFiles.Items.Add(Path + 'output.avc');
+      lbxOutputFiles.Items.Add(Path + 'output.mvc');
+    end
+    else if rgrpInputCodec.ItemIndex = 1 then
+    begin
+      lbxOutputFiles.Items.Add(Path + 'output.264');
+    end
+    else
+    begin
+      lbxOutputFiles.Items.Add(Path + 'output.m2v');
+    end;
+  end
+  else
+  begin
+    Application.MessageBox(PChar('Please select an input file first.'), 'No Input File Selected', MB_ICONINFORMATION);
+  end;
+end;
+
 procedure TfrmMain.mnuRemoveFileClick(Sender: TObject);
 var
   ListBox: TListBox;
@@ -721,6 +755,11 @@ begin
       end;
     end;
   end
+end;
+
+procedure TfrmMain.mnuSetDefaultOutputsClick(Sender: TObject);
+begin
+
 end;
 
 procedure TfrmMain.mnuSwitchFilesClick(Sender: TObject);
